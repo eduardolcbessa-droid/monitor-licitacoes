@@ -1,11 +1,11 @@
 {
-  "name": "Monitor de Licitações — Infraestrutura Viária",
-  "short_name": "Monitor Licit.",
+  "name": "LicitaMonitor — Infraestrutura Viária",
+  "short_name": "LicitaMonitor",
   "description": "Monitor de licitações de infraestrutura viária via API do PNCP",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0C0F14",
-  "theme_color": "#3B82F6",
+  "background_color": "#0A0E17",
+  "theme_color": "#0A0E17",
   "orientation": "any",
   "icons": [
     {
