@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#3B82F6">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%233B82F6'/><text x='90' y='125' font-family='Arial' font-size='95' font-weight='bold' fill='white' text-anchor='middle'>LM</text></svg>">
+<title>Monitor de Licitações</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0C0F14;--bgc:#141820;--bgch:#1A1F2A;--brd:#1E2430;--brda:#2A3040;--txt:#E8ECF4;--txm:#8892A4;--txd:#5A6478;--acc:#3B82F6;--accg:rgba(59,130,246,.15);--grn:#22C55E;--grng:rgba(34,197,94,.15);--amb:#F59E0B;--ambg:rgba(245,158,11,.15);--red:#EF4444;--redg:rgba(239,68,68,.12);--pur:#A78BFA;--purg:rgba(139,92,246,.12);--r:12px;--rs:8px;--f:'DM Sans',sans-serif;--m:'JetBrains Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--f);background:var(--bg);color:var(--txt);min-height:100vh;min-height:100dvh;line-height:1.6;padding-top:env(safe-area-inset-top);-webkit-user-select:none;user-select:text}
+.hdr{padding:20px 20px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:linear-gradient(180deg,rgba(59,130,246,.04),transparent);position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hdr-l{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;background:linear-gradient(135deg,var(--acc),#6366F1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.3)}
+.hdr-t{font-size:18px;font-weight:700}.hdr-s{font-size:12px;color:var(--txm)}.hdr-st{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txm);font-family:var(--m);background:var(--bgc);padding:6px 12px;border-radius:var(--rs);border:1px solid var(--brd)}
+.dot{width:7px;height:7px;background:var(--grn);border-radius:50%;animation:pulse 2s infinite}@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+.mn{max-width:1280px;margin:0 auto;padding:20px 16px}
+.install-banner{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(99,102,241,.1));border:1px solid rgba(59,130,246,.2);border-radius:var(--r);padding:16px 20px;margin-bottom:20px;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.install-banner.show{display:flex}.ib-txt{font-size:13px;color:var(--txt)}.ib-txt small{display:block;color:var(--txm);font-size:11px;margin-top:2px}
+.ib-btn{padding:8px 18px;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer}.ib-close{background:none;border:none;color:var(--txd);font-size:18px;cursor:pointer;padding:4px}
+.pts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:20px}
+.pt{background:var(--bgc);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:var(--txt);transition:all .2s}.pt:hover{background:var(--bgch);border-color:var(--brda)}
+.pti{display:flex;align-items:center;gap:10px}.pic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.pic.fed{background:rgba(34,197,94,.15);color:var(--grn)}.pic.df{background:rgba(245,158,11,.15);color:var(--amb)}.pic.nv{background:rgba(239,68,68,.15);color:var(--red)}.pic.pn{background:var(--accg);color:var(--acc)}
+.ptn{font-size:13px;font-weight:600}.ptd{font-size:10px;color:var(--txm)}.pta{color:var(--txd);font-size:16px}
+.fs{background:var(--bgc);border:1px solid var(--brd);border-radius:var(--r);padding:20px;margin-bottom:20px}
+.fsh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.fst{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}.fst svg{width:16px;height:16px;color:var(--acc)}
+.ftog{font-size:12px;color:var(--acc);cursor:pointer;border:none;background:none;font-family:var(--f);font-weight:500}
+.finner{overflow:hidden;transition:max-height .3s ease}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.fg label{display:block;font-size:11px;color:var(--txm);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select{width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);color:var(--txt);font-family:var(--f);font-size:13px;outline:none}.fg input:focus,.fg select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accg)}
+.fg input[type=date]{font-family:var(--m);font-size:12px}
+.sl{font-size:11px;color:var(--txm);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;display:block}
+.us{margin-bottom:16px}.uqa{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.uqb{font-size:10px;font-family:var(--f);padding:3px 10px;background:transparent;border:1px solid var(--brd);border-radius:20px;color:var(--txm);cursor:pointer;transition:all .2s}.uqb:hover{border-color:var(--acc);color:var(--acc)}.uqb.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.ug{display:flex;flex-wrap:wrap;gap:5px}.ut{font-size:11px;font-family:var(--m);padding:4px 8px;background:transparent;border:1px solid var(--brd);border-radius:5px;color:var(--txd);cursor:pointer;transition:all .15s;user-select:none}.ut:hover{border-color:var(--txm);color:var(--txm)}.ut.on{background:var(--accg);border-color:rgba(59,130,246,.4);color:var(--acc);font-weight:600}.ut.on.df{background:var(--ambg);border-color:rgba(245,158,11,.4);color:var(--amb)}
+.kd{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}.kt{font-size:11px;font-family:var(--m);padding:4px 10px;background:transparent;border:1px solid var(--brd);border-radius:20px;color:var(--txd);cursor:pointer;transition:all .2s}.kt:hover{border-color:var(--txm);color:var(--txm)}.kt.on{background:var(--accg);border-color:rgba(59,130,246,.25);color:var(--acc)}
+.fa{display:flex;gap:10px;flex-wrap:wrap}.btn{padding:10px 20px;border-radius:var(--rs);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:6px}
+.bp{background:var(--acc);color:#fff;box-shadow:0 2px 12px rgba(59,130,246,.3)}.bp:hover{background:#2563EB}.bp:disabled{opacity:.5;cursor:not-allowed}
+.bs{background:transparent;color:var(--txm);border:1px solid var(--brd)}.bs:hover{border-color:var(--txm);color:var(--txt)}
+.sb{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}.sc{background:var(--bgc);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px}.scl{font-size:10px;color:var(--txd);text-transform:uppercase;letter-spacing:.5px;font-weight:500}.scv{font-size:22px;font-weight:700;margin-top:2px;font-family:var(--m)}
+.ruf{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;align-items:center}.rufl{font-size:11px;color:var(--txd);margin-right:6px;font-weight:500}
+.rut{font-size:10px;font-family:var(--m);padding:3px 8px;background:var(--bgc);border:1px solid var(--brd);border-radius:20px;color:var(--txm);cursor:pointer;transition:all .15s}.rut:hover{border-color:var(--acc)}.rut.on{background:var(--accg);border-color:rgba(59,130,246,.3);color:var(--acc)}.ruc{font-size:9px;opacity:.7;margin-left:2px}
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}.rc{font-size:13px;color:var(--txm)}.rc strong{color:var(--txt);font-weight:600}
+.ss{padding:5px 10px;background:var(--bg);border:1px solid var(--brd);border-radius:var(--rs);color:var(--txm);font-family:var(--f);font-size:12px;outline:none;cursor:pointer}
+.rl{display:flex;flex-direction:column;gap:10px}
+.rd{background:var(--bgc);border:1px solid var(--brd);border-radius:var(--r);padding:18px;transition:all .2s;cursor:pointer;position:relative}.rd:hover{background:var(--bgch);border-color:var(--brda)}
+.rd.new-item{border-left:3px solid var(--grn)}
+.new-badge{position:absolute;top:12px;right:12px;font-size:9px;font-family:var(--m);padding:2px 8px;background:var(--grng);color:var(--grn);border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.rt{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:10px;flex-wrap:wrap}.rol{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rub{font-size:10px;font-family:var(--m);font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.5px}
+.ubdf{background:var(--ambg);color:var(--amb);border:1px solid rgba(245,158,11,.25)}.ubgo{background:var(--grng);color:var(--grn);border:1px solid rgba(34,197,94,.25)}.ubx{background:var(--purg);color:var(--pur);border:1px solid rgba(139,92,246,.25)}
+.ro{font-size:11px;color:var(--acc);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.rm{font-size:10px;font-family:var(--m);padding:2px 8px;border-radius:20px;white-space:nowrap}
+.mc{background:var(--accg);color:var(--acc);border:1px solid rgba(59,130,246,.2)}.mp{background:var(--grng);color:var(--grn);border:1px solid rgba(34,197,94,.2)}.md{background:var(--ambg);color:var(--amb);border:1px solid rgba(245,158,11,.2)}.mo{background:var(--purg);color:var(--pur);border:1px solid rgba(139,92,246,.2)}
+.rob{font-size:14px;font-weight:500;line-height:1.5;margin-bottom:12px;color:var(--txt)}.rob mark{background:rgba(59,130,246,.2);color:var(--acc);padding:1px 3px;border-radius:3px}
+.rme{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--txm)}.mi{display:flex;align-items:center;gap:5px}.mi svg{width:13px;height:13px;color:var(--txd)}.mv{color:var(--txt);font-weight:500}.mvv{color:var(--grn);font-family:var(--m);font-weight:600}
+.rlk{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--acc);text-decoration:none;margin-top:10px;font-weight:500}
+.ls{text-align:center;padding:50px 20px;display:none}.ls.on{display:block}.sp{width:36px;height:36px;border:3px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}@keyframes spin{to{transform:rotate(360deg)}}.lt{font-size:13px;color:var(--txm)}.ld{font-size:11px;color:var(--txd);font-family:var(--m);margin-top:4px}
+.es{text-align:center;padding:50px 20px;color:var(--txm)}.ei{font-size:42px;margin-bottom:12px;opacity:.5}.et{font-size:15px;font-weight:600;color:var(--txt);margin-bottom:6px}
+.err{background:var(--redg);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);padding:16px 20px;display:none;margin-bottom:12px}.err.on{display:flex;align-items:flex-start;gap:10px}.ert{font-size:13px;color:var(--red)}.ert strong{display:block;margin-bottom:3px}.ert small{color:var(--txm);font-size:11px}
+.ft{text-align:center;padding:24px 16px;border-top:1px solid var(--brd);margin-top:32px;font-size:11px;color:var(--txd)}.ft a{color:var(--txm);text-decoration:none}
+@media(min-width:769px){.sb{grid-template-columns:repeat(4,1fr)}.pts{grid-template-columns:repeat(4,1fr)}}
+.fi{animation:fadeIn .3s ease-out}@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<header class="hdr"><div class="hdr-l"><div class="logo">LM</div><div><div class="hdr-t">Monitor de Licitações</div><div class="hdr-s">Infraestrutura Viária</div></div></div><div class="hdr-st"><span class="dot"></span><span id="stTxt">Iniciando...</span></div></header>
+
+<main class="mn">
+
+<div class="install-banner" id="installBanner">
+<div class="ib-txt">Instalar como app no seu celular<small>Acesso rápido pela tela inicial, sem navegador</small></div>
+<div style="display:flex;gap:8px;align-items:center"><button class="ib-btn" id="installBtn">Instalar</button><button class="ib-close" onclick="document.getElementById('installBanner').classList.remove('show')">&times;</button></div>
+</div>
+
+<section class="pts">
+<a class="pt" href="https://pncp.gov.br/app/editais?q=pavimenta%C3%A7%C3%A3o&uf=DF" target="_blank"><div class="pti"><div class="pic pn">P</div><div><div class="ptn">PNCP</div><div class="ptd">Portal Nacional</div></div></div><span class="pta">→</span></a>
+<a class="pt" href="https://portal.compras.df.gov.br/licitacao" target="_blank"><div class="pti"><div class="pic df">DF</div><div><div class="ptn">Compras DF</div><div class="ptd">Portal GDF</div></div></div><span class="pta">→</span></a>
+<a class="pt" href="http://app.novacap.df.gov.br/sislicitapublica/" target="_blank"><div class="pti"><div class="pic nv">N</div><div><div class="ptn">NOVACAP</div><div class="ptd">Obras e engenharia</div></div></div><span class="pta">→</span></a>
+<a class="pt" href="https://www.gov.br/compras/pt-br/acesso-a-informacao/consulta-detalhada" target="_blank"><div class="pti"><div class="pic fed">C</div><div><div class="ptn">Compras.gov</div><div class="ptd">Federal</div></div></div><span class="pta">→</span></a>
+</section>
+
+<section class="fs">
+<div class="fsh"><div class="fst"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8.5V18l-4 2V12.5L3 4z"/></svg>Filtros da busca PNCP</div><button class="ftog" id="fTog" onclick="togF()">Ocultar filtros</button></div>
+<div class="finner" id="fInner">
+<div class="fg">
+<div><label>Data inicial</label><input type="date" id="dI"/></div>
+<div><label>Data final</label><input type="date" id="dF"/></div>
+<div><label>Modalidade</label><select id="mod"><option value="">Todas</option><option value="4">Concorrência Eletrônica</option><option value="5">Concorrência Presencial</option><option value="6">Pregão Eletrônico</option><option value="8">Dispensa de Licitação</option><option value="9">Inexigibilidade</option><option value="12">Credenciamento</option></select></div>
+</div>
+<div class="us">
+<span class="sl">Estados</span>
+<div class="uqa">
+<button class="uqb" onclick="ufP('df')">Só DF</button>
+<button class="uqb" onclick="ufP('dg')">DF+GO</button>
+<button class="uqb" onclick="ufP('dv')">DF+Vizinhos</button>
+<button class="uqb" onclick="ufP('all')">Todos</button>
+<button class="uqb" onclick="ufP('x')">Limpar</button>
+</div>
+<div class="ug" id="ufG"></div>
+</div>
+<span class="sl">Palavras-chave</span>
+<div class="kd" id="kwC">
+<span class="kt on" data-k="paviment">pavimentação</span>
+<span class="kt on" data-k="cbuq">CBUQ</span>
+<span class="kt on" data-k="fresag">fresagem</span>
+<span class="kt on" data-k="terraplenag">terraplenagem</span>
+<span class="kt on" data-k="asfalt">asfalto</span>
+<span class="kt on" data-k="drenag">drenagem</span>
+<span class="kt on" data-k="recapeamento">recapeamento</span>
+<span class="kt on" data-k="infra.*vi[aá]r">infra viária</span>
+<span class="kt on" data-k="tapa.?buraco">tapa-buraco</span>
+<span class="kt on" data-k="meio.?fio">meio-fio</span>
+<span class="kt on" data-k="sinaliza[çc][ãa]o.*vi[aá]r">sinal. viária</span>
+<span class="kt on" data-k="base.*granular">base granular</span>
+</div>
+</div>
+<div class="fa">
+<button class="btn bp" id="btnB" onclick="buscar()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Buscar</button>
+<button class="btn bs" onclick="limpar()">Limpar</button>
+</div>
+</section>
+
+<div class="sb" id="sBar" style="display:none">
+<div class="sc"><div class="scl">Encontradas</div><div class="scv" style="color:var(--acc)" id="sT">0</div></div>
+<div class="sc"><div class="scl">Valor estimado</div><div class="scv" style="color:var(--grn)" id="sV">R$ 0</div></div>
+<div class="sc"><div class="scl">Abertas</div><div class="scv" style="color:var(--amb)" id="sA">0</div></div>
+<div class="sc"><div class="scl">Novas</div><div class="scv" style="color:var(--grn)" id="sN">0</div></div>
+</div>
+
+<div class="err" id="errS"><span style="font-size:18px">⚠</span><div class="ert" id="errT"></div></div>
+<div class="ls" id="ldS"><div class="sp"></div><div class="lt">Consultando PNCP...</div><div class="ld" id="ldD">Buscando</div></div>
+<div id="resC"></div>
+</main>
+
+<footer class="ft">Monitor de Licitações v1.1 PWA · <a href="https://pncp.gov.br" target="_blank">API Pública PNCP</a></footer>
+
+<script>
+// === PWA INSTALL ===
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').classList.add('show')});
+document.getElementById('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('installBanner').classList.remove('show')});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');
+
+// === CONFIG ===
+const API='https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
+const UFS=['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'];
+const PRE={df:['DF'],dg:['DF','GO'],dv:['DF','GO','MG','BA','SP'],all:[],x:[]};
+const SEEN_KEY='lm_seen_ids';
+
+// === INIT DATES ===
+const hj=new Date(),t30=new Date(hj);t30.setDate(hj.getDate()-30);
+document.getElementById('dF').value=fd(hj);document.getElementById('dI').value=fd(t30);
+
+// === INIT UF GRID ===
+const ufG=document.getElementById('ufG');
+UFS.forEach(u=>{const e=document.createElement('span');e.className='ut'+(u==='DF'?' on df':'');e.textContent=u;e.dataset.u=u;e.onclick=()=>{e.classList.toggle('on');if(u==='DF')e.classList.toggle('df',e.classList.contains('on'));uqb()};ufG.appendChild(e)});
+document.querySelectorAll('.kt').forEach(t=>t.onclick=()=>t.classList.toggle('on'));
+
+// === UF FUNCTIONS ===
+function gUF(){return[...document.querySelectorAll('.ut.on')].map(e=>e.dataset.u)}
+function ufP(p){const u=PRE[p]||[];document.querySelectorAll('.ut').forEach(e=>{const a=u.length?u.includes(e.dataset.u):false;e.classList.toggle('on',a);if(e.dataset.u==='DF')e.classList.toggle('df',a)});uqb()}
+function uqb(){const s=gUF().sort().join(',');document.querySelectorAll('.uqb').forEach(b=>b.classList.remove('on'));const m={'DF':0,'DF,GO':1,'BA,DF,GO,MG,SP':2,'':3};const idx=m[s];if(idx!==undefined)[...document.querySelectorAll('.uqb')][idx]?.classList.add('on')}
+uqb();
+
+// === TOGGLE FILTERS ===
+let fOpen=true;
+function togF(){const el=document.getElementById('fInner'),btn=document.getElementById('fTog');fOpen=!fOpen;el.style.maxHeight=fOpen?el.scrollHeight+'px':'0px';btn.textContent=fOpen?'Ocultar filtros':'Mostrar filtros'}
+
+// === UTILS ===
+function fd(d){return d.toISOString().split('T')[0]}
+function fa(s){return s.replace(/-/g,'')}
+function fc(v){if(!v&&v!==0)return'—';return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:0}).format(v)}
+function fdt(s){if(!s)return'—';try{return new Date(s).toLocaleDateString('pt-BR')}catch{return s}}
+function gKW(){return[...document.querySelectorAll('.kt.on')].map(t=>t.dataset.k)}
+function mKW(t,k){if(!t)return false;const l=t.toLowerCase();return k.some(w=>{try{return new RegExp(w,'i').test(l)}catch{return l.includes(w)}})}
+function hKW(t,k){if(!t)return'';let r=t;k.forEach(w=>{try{r=r.replace(new RegExp('('+w+')','gi'),'<mark>$1</mark>')}catch{}});return r}
+function mCl(n){if(!n)return'mo';const l=n.toLowerCase();if(l.includes('concorr'))return'mc';if(l.includes('preg'))return'mp';if(l.includes('dispensa'))return'md';return'mo'}
+function eUF(i){if(i.unidadeOrgao?.ufSigla)return i.unidadeOrgao.ufSigla;if(i.orgaoEntidade?.ufSigla)return i.orgaoEntidade.ufSigla;if(i.ufSigla)return i.ufSigla;const r=(i.orgaoEntidade?.razaoSocial||'').toUpperCase();if(r.includes('DISTRITO FEDERAL')||r.includes('NOVACAP')||r.includes('/DF'))return'DF';if(r.includes('GOIÁS')||r.includes('GOIAS')||r.includes('/GO'))return'GO';return i.uf||'??'}
+function ubCl(u){return u==='DF'?'ubdf':u==='GO'?'ubgo':'ubx'}
+
+// === SEEN IDS (for "new" badges) ===
+function getSeenIds(){try{return JSON.parse(localStorage.getItem(SEEN_KEY)||'[]')}catch{return[]}}
+function saveSeenIds(ids){try{localStorage.setItem(SEEN_KEY,JSON.stringify(ids.slice(-500)))}catch{}}
+
+// === MAIN STATE ===
+let allR=[],filtR=[],actUF=null;
+
+// === AUTO SEARCH ON LOAD ===
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('fInner').style.maxHeight=document.getElementById('fInner').scrollHeight+'px';
+    buscar();
+  },300);
+});
+
+async function buscar(){
+const di=document.getElementById('dI').value,df=document.getElementById('dF').value,mod=document.getElementById('mod').value;
+const ufs=gUF(),kws=gKW();
+if(!di||!df){shErr('Preencha as datas.');return}
+if(!kws.length){shErr('Ative pelo menos uma palavra-chave.');return}
+hErr();allR=[];filtR=[];actUF=null;
+document.getElementById('resC').innerHTML='';document.getElementById('sBar').style.display='none';
+shLd(true);stTxt('Consultando...');
+document.getElementById('btnB').disabled=true;
+try{
+let all=[];const uBusca=ufs.length?ufs:[''];
+for(const u of uBusca){let pg=1,tp=1;
+while(pg<=tp&&pg<=15){
+document.getElementById('ldD').textContent=(u||'todos')+' — pág '+pg+(tp>1?'/'+tp:'');
+const p=new URLSearchParams({dataInicial:fa(di),dataFinal:fa(df),pagina:pg,tamanhoPagina:'50'});
+if(u)p.set('uf',u);if(mod)p.set('codigoModalidadeContratacao',mod);
+const res=await fetch(API+'?'+p);
+if(!res.ok){if(res.status===404)break;throw new Error('HTTP '+res.status)}
+const d=await res.json();if(!d.data||!d.data.length)break;
+d.data.forEach(i=>i._uf=u||eUF(i));
+all=all.concat(d.data);tp=d.totalPaginas||1;pg++;
+await new Promise(r=>setTimeout(r,250));
+}}
+const seen=new Set();
+allR=all.filter(i=>{const txt=[i.objetoCompra,i.orgaoEntidade?.razaoSocial,i.descricao].filter(Boolean).join(' ');return mKW(txt,kws)}).filter(i=>{const id=i.numeroControlePNCP||JSON.stringify(i);if(seen.has(id))return false;seen.add(id);return true});
+
+// Mark new items
+const prevSeen=getSeenIds();
+const currentIds=allR.map(i=>i.numeroControlePNCP).filter(Boolean);
+allR.forEach(i=>{i._isNew=i.numeroControlePNCP&&!prevSeen.includes(i.numeroControlePNCP)});
+saveSeenIds([...new Set([...prevSeen,...currentIds])]);
+
+filtR=[...allR];shLd(false);render(filtR,kws);stats(filtR,all.length);
+const newCount=allR.filter(i=>i._isNew).length;
+stTxt(filtR.length+' licit.'+(newCount?' · '+newCount+' novas':''));
+}catch(e){shLd(false);if(e.message.includes('fetch')||e.message.includes('CORS'))shErr('Bloqueio CORS — use os links diretos.');else shErr('Erro: '+e.message);stTxt('Erro')}
+document.getElementById('btnB').disabled=false;
+}
+
+function render(res,kws){
+const c=document.getElementById('resC');
+if(!res.length){c.innerHTML='<div class="es fi"><div class="ei">🔍</div><div class="et">Nenhuma licitação encontrada</div><p>Amplie o período ou altere filtros.</p></div>';return}
+const uc={};allR.forEach(i=>{const u=i._uf||'??';uc[u]=(uc[u]||0)+1});
+const su=Object.entries(uc).sort((a,b)=>a[0]==='DF'?-1:b[0]==='DF'?1:b[1]-a[1]);
+let h='<div class="rh"><div class="rc"><strong>'+res.length+'</strong> licitações</div><select class="ss" onchange="srt(this.value)"><option value="dd">Mais recentes</option><option value="da">Mais antigas</option><option value="vd">Maior valor</option><option value="va">Menor valor</option></select></div>';
+if(su.length>1){h+='<div class="ruf"><span class="rufl">UF:</span><span class="rut'+(actUF?'':' on')+'" onclick="fUF(null)">Todas <span class="ruc">('+allR.length+')</span></span>';su.forEach(([u,n])=>{h+='<span class="rut'+(actUF===u?' on':'')+'" onclick="fUF(\''+u+'\')">'+u+' <span class="ruc">('+n+')</span></span>'});h+='</div>'}
+h+='<div class="rl">';
+res.forEach((i,idx)=>{
+const org=i.orgaoEntidade?.razaoSocial||'Órgão não informado';
+const obj=i.objetoCompra||'';
+const mod=i.modalidadeNome||i.modalidadeLicitacaoNome||'';
+const val=i.valorTotalEstimado||i.valorTotalHomologado||null;
+const dAb=i.dataAberturaProposta||i.dataEncerramentoProposta||null;
+const dPub=i.dataPublicacaoPncp||null;
+const sit=i.situacaoCompraNome||'';
+const uf=i._uf||'??';
+const ano=i.anoCompra||'',seq=i.sequencialCompra||'',cnpj=i.orgaoEntidade?.cnpj||'';
+let lk='#';if(cnpj&&ano&&seq)lk='https://pncp.gov.br/app/editais/'+cnpj+'/'+ano+'/'+seq;
+const isNew=i._isNew;
+h+='<div class="rd fi'+(isNew?' new-item':'')+'" style="animation-delay:'+Math.min(idx*.02,.4)+'s" onclick="window.open(\''+lk+'\',\'_blank\')">'+(isNew?'<span class="new-badge">Nova</span>':'')+'<div class="rt"><div class="rol"><span class="rub '+ubCl(uf)+'">'+uf+'</span><span class="ro">'+org+'</span></div>'+(mod?'<span class="rm '+mCl(mod)+'">'+mod+'</span>':'')+'</div><div class="rob">'+hKW(obj,kws)+'</div><div class="rme">'+(val?'<div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span class="mv mvv">'+fc(val)+'</span></div>':'')+(dAb?'<div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="mv">'+fdt(dAb)+'</span></div>':'')+(sit?'<div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="mv">'+sit+'</span></div>':'')+'</div><a class="rlk" href="'+lk+'" target="_blank" onclick="event.stopPropagation()">Ver no PNCP →</a></div>';
+});
+h+='</div>';c.innerHTML=h;
+}
+
+function fUF(u){actUF=u;filtR=u?allR.filter(i=>i._uf===u):[...allR];render(filtR,gKW());stats(filtR,0)}
+function srt(m){switch(m){case'dd':filtR.sort((a,b)=>new Date(b.dataPublicacaoPncp||0)-new Date(a.dataPublicacaoPncp||0));break;case'da':filtR.sort((a,b)=>new Date(a.dataPublicacaoPncp||0)-new Date(b.dataPublicacaoPncp||0));break;case'vd':filtR.sort((a,b)=>(b.valorTotalEstimado||0)-(a.valorTotalEstimado||0));break;case'va':filtR.sort((a,b)=>(a.valorTotalEstimado||0)-(b.valorTotalEstimado||0));break}render(filtR,gKW())}
+function stats(r,tb){const b=document.getElementById('sBar');b.style.display='grid';document.getElementById('sT').textContent=r.length;document.getElementById('sV').textContent=fc(r.reduce((s,i)=>s+(i.valorTotalEstimado||0),0));document.getElementById('sA').textContent=r.filter(i=>(i.situacaoCompraNome||'').toLowerCase().match(/divulgada|aberta|publicada/)).length;document.getElementById('sN').textContent=r.filter(i=>i._isNew).length}
+function shLd(s){document.getElementById('ldS').classList.toggle('on',s)}
+function stTxt(t){document.getElementById('stTxt').textContent=t}
+function shErr(t,d){document.getElementById('errT').innerHTML='<strong>'+t+'</strong>'+(d?'<small>'+d+'</small>':'');document.getElementById('errS').classList.add('on')}
+function hErr(){document.getElementById('errS').classList.remove('on')}
+function limpar(){allR=[];filtR=[];actUF=null;document.getElementById('resC').innerHTML='';document.getElementById('sBar').style.display='none';hErr();stTxt('Pronto')}
+</script>
+</body>
+</html>
