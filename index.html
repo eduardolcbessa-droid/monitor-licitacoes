@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Licitações — Infraestrutura Viária DF</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0C0F14;
+            --bg-card: #141820;
+            --bg-card-hover: #1A1F2A;
+            --border: #1E2430;
+            --border-accent: #2A3040;
+            --text: #E8ECF4;
+            --text-muted: #8892A4;
+            --text-dim: #5A6478;
+            --accent: #3B82F6;
+            --accent-glow: rgba(59, 130, 246, 0.15);
+            --accent-green: #22C55E;
+            --accent-green-glow: rgba(34, 197, 94, 0.15);
+            --accent-amber: #F59E0B;
+            --accent-amber-glow: rgba(245, 158, 11, 0.15);
+            --accent-red: #EF4444;
+            --accent-red-glow: rgba(239, 68, 68, 0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --font: 'DM Sans', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* === HEADER === */
+        .header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: linear-gradient(180deg, rgba(59,130,246,0.04) 0%, transparent 100%);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent), #6366F1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -1px;
+            box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: var(--mono);
+            background: var(--bg-card);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+        }
+
+        /* === MAIN LAYOUT === */
+        .main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 28px 32px;
+        }
+
+        /* === FILTROS === */
+        .filters-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .filters-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filters-title {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--accent);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .filter-group input[type="date"] {
+            font-family: var(--mono);
+            font-size: 13px;
+        }
+
+        .keywords-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .keyword-tag {
+            font-size: 12px;
+            font-family: var(--mono);
+            padding: 5px 12px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 20px;
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .keyword-tag:hover {
+            background: rgba(59,130,246,0.25);
+        }
+
+        .keyword-tag.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .filters-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 12px rgba(59,130,246,0.3);
+        }
+
+        .btn-primary:hover {
+            background: #2563EB;
+            box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-muted);
+            color: var(--text);
+        }
+
+        /* === PORTAIS EXTERNOS === */
+        .portals-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .portal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .portal-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .portal-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .portal-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .portal-icon.federal { background: rgba(34,197,94,0.15); color: var(--accent-green); }
+        .portal-icon.df { background: rgba(245,158,11,0.15); color: var(--accent-amber); }
+        .portal-icon.novacap { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .portal-icon.pncp { background: var(--accent-glow); color: var(--accent); }
+
+        .portal-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .portal-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .portal-arrow {
+            color: var(--text-dim);
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .portal-card:hover .portal-arrow {
+            transform: translateX(4px);
+            color: var(--text-muted);
+        }
+
+        /* === RESULTADOS === */
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .results-count strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .result-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-accent);
+        }
+
+        .result-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .result-orgao {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .result-modalidade {
+            font-size: 11px;
+            font-family: var(--mono);
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .modalidade-concorrencia {
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+
+        .modalidade-pregao {
+            background: var(--accent-green-glow);
+            color: var(--accent-green);
+            border: 1px solid rgba(34,197,94,0.2);
+        }
+
+        .modalidade-dispensa {
+            background: var(--accent-amber-glow);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245,158,11,0.2);
+        }
+
+        .modalidade-outro {
+            background: rgba(139,92,246,0.12);
+            color: #A78BFA;
+            border: 1px solid rgba(139,92,246,0.2);
+        }
+
+        .result-objeto {
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .result-objeto mark {
+            background: rgba(59,130,246,0.2);
+            color: var(--accent);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+
+        .result-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-item svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-dim);
+        }
+
+        .meta-value {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .meta-value.valor {
+            color: var(--accent-green);
+            font-family: var(--mono);
+            font-weight: 600;
+        }
+
+        .result-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--accent);
+            text-decoration: none;
+            margin-top: 12px;
+            font-weight: 500;
+            transition: gap 0.2s;
+        }
+
+        .result-link:hover {
+            gap: 10px;
+        }
+
+        /* === LOADING === */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .loading-state.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .loading-detail {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            margin-top: 4px;
+        }
+
+        /* === EMPTY STATE === */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        /* === ERROR STATE === */
+        .error-state {
+            background: var(--accent-red-glow);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            display: none;
+            margin-bottom: 16px;
+        }
+
+        .error-state.active {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .error-text {
+            font-size: 14px;
+            color: var(--accent-red);
+        }
+
+        .error-text strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .error-text small {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* === STATS BAR === */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 4px;
+            font-family: var(--mono);
+        }
+
+        .stat-value.blue { color: var(--accent); }
+        .stat-value.green { color: var(--accent-green); }
+        .stat-value.amber { color: var(--accent-amber); }
+
+        /* === FOOTER === */
+        .footer {
+            text-align: center;
+            padding: 32px;
+            border-top: 1px solid var(--border);
+            margin-top: 48px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .header { padding: 16px 20px; }
+            .main { padding: 20px 16px; }
+            .filters-grid { grid-template-columns: 1fr; }
+            .result-meta { gap: 12px; }
+            .portals-section { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* === FADE IN ANIMATION === */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === PAGINATION === */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-family: var(--font);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-family: var(--mono);
+            padding: 0 12px;
+        }
+
+        /* Tooltip */
+        .info-tip {
+            position: relative;
+            cursor: help;
+            color: var(--text-dim);
+        }
+
+        .info-tip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text);
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-left">
+        <div class="logo-icon">LM</div>
+        <div>
+            <div class="header-title">Monitor de Licitações</div>
+            <div class="header-subtitle">Infraestrutura Viária — Distrito Federal</div>
+        </div>
+    </div>
+    <div class="header-status">
+        <span class="status-dot"></span>
+        <span id="statusText">Pronto para buscar</span>
+    </div>
+</header>
+
+<main class="main">
+
+    <!-- PORTAIS EXTERNOS -->
+    <section class="portals-section">
+        <a class="portal-card" href="https://pncp.gov.br/app/editais?q=pavimenta%C3%A7%C3%A3o&uf=DF" target="_blank" rel="noopener">
+            <div class="portal-info">
+                <div class="portal-icon pncp">P</div>
+                <div>
+                    <div class="portal-name">PNCP</div>
+                    <div class="portal-desc">Portal Nacional de Contratações</div>
+                </div>
+            </div>
+            <span class="portal-arrow">→</span>
+        </a>
+        <a class="portal-card" href="https://portal.compras.df.gov.br/licitacao" target="_blank" rel="noopener">
+            <div class="portal-info">
+                <div class="portal-icon df">DF</div>
+                <div>
+                    <div class="portal-name">Compras DF</div>
+                    <div class="portal-desc">Portal de Compras do GDF</div>
+                </div>
+            </div>
+            <span class="portal-arrow">→</span>
+        </a>
+        <a class="portal-card" href="http://app.novacap.df.gov.br/sislicitapublica/" target="_blank" rel="noopener">
+            <div class="portal-info">
+                <div class="portal-icon novacap">N</div>
+                <div>
+                    <div class="portal-name">NOVACAP</div>
+                    <div class="portal-desc">Licitações de obras e engenharia</div>
+                </div>
+            </div>
+            <span class="portal-arrow">→</span>
+        </a>
+        <a class="portal-card" href="https://www.gov.br/compras/pt-br/acesso-a-informacao/consulta-detalhada" target="_blank" rel="noopener">
+            <div class="portal-info">
+                <div class="portal-icon federal">C</div>
+                <div>
+                    <div class="portal-name">Compras.gov.br</div>
+                    <div class="portal-desc">Licitações federais — consulta detalhada</div>
+                </div>
+            </div>
+            <span class="portal-arrow">→</span>
+        </a>
+    </section>
+
+    <!-- FILTROS PNCP -->
+    <section class="filters-section">
+        <div class="filters-header">
+            <div class="filters-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8.5V18l-4 2V12.5L3 4z"/></svg>
+                Buscar no PNCP via API
+            </div>
+            <span class="info-tip" data-tip="Consulta a API pública do PNCP e filtra por palavras-chave de infraestrutura viária">ℹ Como funciona?</span>
+        </div>
+
+        <div class="filters-grid">
+            <div class="filter-group">
+                <label>Data inicial</label>
+                <input type="date" id="dataInicial" />
+            </div>
+            <div class="filter-group">
+                <label>Data final</label>
+                <input type="date" id="dataFinal" />
+            </div>
+            <div class="filter-group">
+                <label>UF</label>
+                <select id="uf">
+                    <option value="DF" selected>DF — Distrito Federal</option>
+                    <option value="">Todos os estados</option>
+                    <option value="AC">AC</option><option value="AL">AL</option><option value="AM">AM</option>
+                    <option value="AP">AP</option><option value="BA">BA</option><option value="CE">CE</option>
+                    <option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option>
+                    <option value="MG">MG</option><option value="MS">MS</option><option value="MT">MT</option>
+                    <option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option>
+                    <option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option>
+                    <option value="RN">RN</option><option value="RO">RO</option><option value="RR">RR</option>
+                    <option value="RS">RS</option><option value="SC">SC</option><option value="SE">SE</option>
+                    <option value="SP">SP</option><option value="TO">TO</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Modalidade</label>
+                <select id="modalidade">
+                    <option value="">Todas</option>
+                    <option value="4">Concorrência Eletrônica</option>
+                    <option value="5">Concorrência Presencial</option>
+                    <option value="6">Pregão Eletrônico</option>
+                    <option value="8">Dispensa de Licitação</option>
+                    <option value="9">Inexigibilidade</option>
+                    <option value="12">Credenciamento</option>
+                </select>
+            </div>
+        </div>
+
+        <label style="font-size:12px; color: var(--text-muted); font-weight:500; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:8px;">
+            Palavras-chave (clique para ativar/desativar)
+        </label>
+        <div class="keywords-display" id="keywordsContainer">
+            <span class="keyword-tag active" data-kw="paviment">pavimentação</span>
+            <span class="keyword-tag active" data-kw="cbuq">CBUQ</span>
+            <span class="keyword-tag active" data-kw="fresag">fresagem</span>
+            <span class="keyword-tag active" data-kw="terraplenag">terraplenagem</span>
+            <span class="keyword-tag active" data-kw="asfalt">asfalto</span>
+            <span class="keyword-tag active" data-kw="drenag">drenagem</span>
+            <span class="keyword-tag active" data-kw="recapeamento">recapeamento</span>
+            <span class="keyword-tag active" data-kw="infra.*vi[aá]r">infraestrutura viária</span>
+            <span class="keyword-tag active" data-kw="tapa.?buraco">tapa-buraco</span>
+            <span class="keyword-tag active" data-kw="meio.?fio">meio-fio</span>
+            <span class="keyword-tag active" data-kw="sinaliza[çc][ãa]o.*vi[aá]r">sinalização viária</span>
+            <span class="keyword-tag active" data-kw="base.*granular">base granular</span>
+        </div>
+
+        <div class="filters-actions">
+            <button class="btn btn-primary" id="btnBuscar" onclick="buscarLicitacoes()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Buscar licitações
+            </button>
+            <button class="btn btn-secondary" onclick="limparResultados()">Limpar</button>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats-bar" id="statsBar" style="display:none;">
+        <div class="stat-card">
+            <div class="stat-label">Licitações encontradas</div>
+            <div class="stat-value blue" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Valor total estimado</div>
+            <div class="stat-value green" id="statValor">R$ 0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Com proposta aberta</div>
+            <div class="stat-value amber" id="statAbertas">0</div>
+        </div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="error-state" id="errorState">
+        <span style="font-size:20px;">⚠</span>
+        <div class="error-text" id="errorText"></div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <div class="loading-text">Consultando API do PNCP...</div>
+        <div class="loading-detail" id="loadingDetail">Buscando página 1</div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div id="resultsContainer"></div>
+
+</main>
+
+<footer class="footer">
+    Monitor de Licitações v1.0 · Dados da <a href="https://pncp.gov.br" target="_blank">API Pública do PNCP</a> · Filtragem local por palavras-chave de infraestrutura viária
+</footer>
+
+<script>
+    // ===== CONFIGURAÇÃO INICIAL =====
+    const PROXY_PNCP = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
+    
+    // Definir datas padrão: últimos 30 dias
+    const hoje = new Date();
+    const trintaDiasAtras = new Date(hoje);
+    trintaDiasAtras.setDate(hoje.getDate() - 30);
+    
+    document.getElementById('dataFinal').value = formatDateInput(hoje);
+    document.getElementById('dataInicial').value = formatDateInput(trintaDiasAtras);
+
+    // Toggle de keywords
+    document.querySelectorAll('.keyword-tag').forEach(tag => {
+        tag.addEventListener('click', () => {
+            tag.classList.toggle('active');
+        });
+    });
+
+    // ===== FUNÇÕES UTILITÁRIAS =====
+    function formatDateInput(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    function formatDateAPI(dateStr) {
+        return dateStr.replace(/-/g, '');
+    }
+
+    function formatCurrency(value) {
+        if (!value && value !== 0) return '—';
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(value);
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '—';
+        try {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('pt-BR');
+        } catch {
+            return dateStr;
+        }
+    }
+
+    function getActiveKeywords() {
+        const tags = document.querySelectorAll('.keyword-tag.active');
+        return Array.from(tags).map(t => t.getAttribute('data-kw'));
+    }
+
+    function matchesKeywords(text, keywords) {
+        if (!text) return false;
+        const lower = text.toLowerCase();
+        return keywords.some(kw => {
+            try {
+                return new RegExp(kw, 'i').test(lower);
+            } catch {
+                return lower.includes(kw.toLowerCase());
+            }
+        });
+    }
+
+    function highlightKeywords(text, keywords) {
+        if (!text) return '';
+        let result = text;
+        keywords.forEach(kw => {
+            try {
+                const regex = new RegExp(`(${kw})`, 'gi');
+                result = result.replace(regex, '<mark>$1</mark>');
+            } catch {}
+        });
+        return result;
+    }
+
+    function getModalidadeClass(nome) {
+        if (!nome) return 'modalidade-outro';
+        const n = nome.toLowerCase();
+        if (n.includes('concorrência') || n.includes('concorrencia')) return 'modalidade-concorrencia';
+        if (n.includes('pregão') || n.includes('pregao')) return 'modalidade-pregao';
+        if (n.includes('dispensa')) return 'modalidade-dispensa';
+        return 'modalidade-outro';
+    }
+
+    // ===== BUSCA PRINCIPAL =====
+    let todosResultados = [];
+
+    async function buscarLicitacoes() {
+        const dataInicial = document.getElementById('dataInicial').value;
+        const dataFinal = document.getElementById('dataFinal').value;
+        const uf = document.getElementById('uf').value;
+        const modalidade = document.getElementById('modalidade').value;
+        const keywords = getActiveKeywords();
+
+        if (!dataInicial || !dataFinal) {
+            showError('Preencha as datas inicial e final.');
+            return;
+        }
+
+        if (keywords.length === 0) {
+            showError('Ative pelo menos uma palavra-chave para filtrar os resultados.');
+            return;
+        }
+
+        // Reset UI
+        hideError();
+        todosResultados = [];
+        document.getElementById('resultsContainer').innerHTML = '';
+        document.getElementById('statsBar').style.display = 'none';
+        showLoading(true);
+        updateStatus('Consultando PNCP...');
+
+        const btnBuscar = document.getElementById('btnBuscar');
+        btnBuscar.disabled = true;
+
+        try {
+            let pagina = 1;
+            let totalPaginas = 1;
+            let todosItems = [];
+
+            while (pagina <= totalPaginas && pagina <= 20) {
+                updateLoadingDetail(`Buscando página ${pagina}${totalPaginas > 1 ? ` de ${totalPaginas}` : ''}...`);
+
+                const params = new URLSearchParams({
+                    dataInicial: formatDateAPI(dataInicial),
+                    dataFinal: formatDateAPI(dataFinal),
+                    pagina: pagina.toString(),
+                    tamanhoPagina: '50'
+                });
+
+                if (uf) params.set('uf', uf);
+                if (modalidade) params.set('codigoModalidadeContratacao', modalidade);
+
+                const url = `${PROXY_PNCP}?${params.toString()}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        // Sem resultados
+                        break;
+                    }
+                    throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                if (!data.data || data.data.length === 0) break;
+
+                todosItems = todosItems.concat(data.data);
+                totalPaginas = data.totalPaginas || 1;
+                pagina++;
+
+                // Pequeno delay para não sobrecarregar a API
+                if (pagina <= totalPaginas) {
+                    await new Promise(r => setTimeout(r, 300));
+                }
+            }
+
+            // Filtrar por palavras-chave
+            todosResultados = todosItems.filter(item => {
+                const textoCompleto = [
+                    item.objetoCompra,
+                    item.orgaoEntidade?.razaoSocial,
+                    item.descricao
+                ].filter(Boolean).join(' ');
+                return matchesKeywords(textoCompleto, keywords);
+            });
+
+            showLoading(false);
+            renderResults(todosResultados, keywords);
+            updateStats(todosResultados);
+            updateStatus(`${todosResultados.length} licitações encontradas`);
+
+        } catch (error) {
+            showLoading(false);
+            
+            if (error.message.includes('Failed to fetch') || error.message.includes('CORS') || error.message.includes('NetworkError')) {
+                showError(
+                    'Não foi possível acessar a API do PNCP diretamente do navegador (bloqueio CORS).',
+                    'Use os botões de acesso direto acima para consultar cada portal manualmente, ou acesse o PNCP pelo link direto.'
+                );
+            } else {
+                showError(`Erro na consulta: ${error.message}`, 'Tente novamente ou acesse os portais diretamente pelos links acima.');
+            }
+            updateStatus('Erro na consulta');
+        }
+
+        btnBuscar.disabled = false;
+    }
+
+    // ===== RENDERIZAÇÃO =====
+    function renderResults(results, keywords) {
+        const container = document.getElementById('resultsContainer');
+
+        if (results.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state fade-in">
+                    <div class="empty-icon">🔍</div>
+                    <div class="empty-title">Nenhuma licitação encontrada</div>
+                    <p>Não foram encontradas licitações de infraestrutura viária no período selecionado.<br>
+                    Tente ampliar o período ou use os links diretos para os portais acima.</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = `
+            <div class="results-header">
+                <div class="results-count">
+                    <strong>${results.length}</strong> licitações de infraestrutura viária encontradas
+                </div>
+            </div>
+            <div class="results-list">
+        `;
+
+        results.forEach((item, i) => {
+            const orgao = item.orgaoEntidade?.razaoSocial || 'Órgão não informado';
+            const cnpj = item.orgaoEntidade?.cnpj || '';
+            const objeto = item.objetoCompra || 'Objeto não informado';
+            const modalidade = item.modalidadeNome || item.modalidadeLicitacaoNome || '';
+            const valor = item.valorTotalEstimado || item.valorTotalHomologado || null;
+            const dataAbertura = item.dataAberturaProposta || item.dataEncerramentoProposta || null;
+            const dataPublicacao = item.dataPublicacaoPncp || null;
+            const situacao = item.situacaoCompraNome || '';
+            const numero = item.numeroControlePNCP || '';
+            const anoCompra = item.anoCompra || '';
+            const sequencial = item.sequencialCompra || '';
+            const cnpjOrgao = item.orgaoEntidade?.cnpj || '';
+            
+            // Link para o PNCP
+            let linkPncp = '#';
+            if (cnpjOrgao && anoCompra && sequencial) {
+                linkPncp = `https://pncp.gov.br/app/editais/${cnpjOrgao}/${anoCompra}/${sequencial}`;
+            } else if (numero) {
+                linkPncp = `https://pncp.gov.br/app/editais?q=${encodeURIComponent(numero)}`;
+            }
+
+            const objetoHighlighted = highlightKeywords(objeto, keywords);
+            const modClass = getModalidadeClass(modalidade);
+
+            html += `
+                <div class="result-card fade-in" style="animation-delay: ${i * 0.05}s" onclick="window.open('${linkPncp}', '_blank')">
+                    <div class="result-top">
+                        <div class="result-orgao">${orgao}</div>
+                        ${modalidade ? `<span class="result-modalidade ${modClass}">${modalidade}</span>` : ''}
+                    </div>
+                    <div class="result-objeto">${objetoHighlighted}</div>
+                    <div class="result-meta">
+                        ${valor ? `
+                            <div class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                                <span class="meta-value valor">${formatCurrency(valor)}</span>
+                            </div>
+                        ` : ''}
+                        ${dataAbertura ? `
+                            <div class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <span>Abertura: </span><span class="meta-value">${formatDate(dataAbertura)}</span>
+                            </div>
+                        ` : ''}
+                        ${dataPublicacao ? `
+                            <div class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                <span>Publicação: </span><span class="meta-value">${formatDate(dataPublicacao)}</span>
+                            </div>
+                        ` : ''}
+                        ${situacao ? `
+                            <div class="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span class="meta-value">${situacao}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <a class="result-link" href="${linkPncp}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                        Ver no PNCP →
+                    </a>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function updateStats(results) {
+        const bar = document.getElementById('statsBar');
+        bar.style.display = 'grid';
+
+        document.getElementById('statTotal').textContent = results.length;
+
+        const valorTotal = results.reduce((sum, item) => {
+            return sum + (item.valorTotalEstimado || item.valorTotalHomologado || 0);
+        }, 0);
+        document.getElementById('statValor').textContent = formatCurrency(valorTotal);
+
+        const abertas = results.filter(item => {
+            const sit = (item.situacaoCompraNome || '').toLowerCase();
+            return sit.includes('divulgada') || sit.includes('aberta') || sit.includes('publicada');
+        }).length;
+        document.getElementById('statAbertas').textContent = abertas;
+
+        bar.classList.add('fade-in');
+    }
+
+    // ===== UI HELPERS =====
+    function showLoading(show) {
+        document.getElementById('loadingState').classList.toggle('active', show);
+    }
+
+    function updateLoadingDetail(text) {
+        document.getElementById('loadingDetail').textContent = text;
+    }
+
+    function updateStatus(text) {
+        document.getElementById('statusText').textContent = text;
+    }
+
+    function showError(title, detail) {
+        const el = document.getElementById('errorState');
+        document.getElementById('errorText').innerHTML = `
+            <strong>${title}</strong>
+            ${detail ? `<small>${detail}</small>` : ''}
+        `;
+        el.classList.add('active');
+    }
+
+    function hideError() {
+        document.getElementById('errorState').classList.remove('active');
+    }
+
+    function limparResultados() {
+        todosResultados = [];
+        document.getElementById('resultsContainer').innerHTML = '';
+        document.getElementById('statsBar').style.display = 'none';
+        hideError();
+        updateStatus('Pronto para buscar');
+    }
+</script>
+
+</body>
+</html>
