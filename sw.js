@@ -1,5 +1,66 @@
-const CACHE_NAME='licitamonitor-v2';
-const ASSETS=['./index.html','./manifest.json'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));self.skipWaiting()});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==CACHE_NAME).map(n=>caches.delete(n)))));self.clients.claim()});
-self.addEventListener('fetch',e=>{if(e.request.url.includes('pncp.gov.br/api')){e.respondWith(fetch(e.request).catch(()=>new Response(JSON.stringify({data:[],totalPaginas:0}),{headers:{'Content-Type':'application/json'}})))}else{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))}});
+// ============================================================
+// LicitaMonitor v3.0 — Service Worker
+// ============================================================
+
+const CACHE_NAME = 'licitamonitor-v3';
+
+const ASSETS_TO_CACHE = [
+  './index.html',
+  './manifest.json',
+];
+
+// Instalação: pré-cachear arquivos essenciais
+self.addEventListener('install', (evento) => {
+  evento.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+  );
+  self.skipWaiting();
+});
+
+// Ativação: limpar caches antigos
+self.addEventListener('activate', (evento) => {
+  evento.waitUntil(
+    caches.keys().then((nomes) =>
+      Promise.all(
+        nomes
+          .filter((nome) => nome !== CACHE_NAME)
+          .map((nome) => caches.delete(nome))
+      )
+    )
+  );
+  self.clients.claim();
+});
+
+// Fetch: estratégias diferentes por tipo de requisição
+self.addEventListener('fetch', (evento) => {
+  const url = evento.request.url;
+
+  if (url.includes('pncp.gov.br/api')) {
+    // API PNCP: network-first, retorna dados vazios se offline
+    evento.respondWith(
+      fetch(evento.request).catch(() =>
+        new Response(
+          JSON.stringify({ data: [], totalPaginas: 0 }),
+          { headers: { 'Content-Type': 'application/json' } }
+        )
+      )
+    );
+  } else if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
+    // Fontes Google: cache-first com fallback para rede
+    evento.respondWith(
+      caches.match(evento.request).then((cached) =>
+        cached || fetch(evento.request).then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(evento.request, clone));
+          return response;
+        })
+      )
+    );
+  } else {
+    // Assets estáticos: cache-first
+    evento.respondWith(
+      caches.match(evento.request).then((cached) => cached || fetch(evento.request))
+    );
+  }
+});

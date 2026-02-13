@@ -1,73 +1,1567 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0A0E17">
-<link rel="manifest" href="./manifest.json">
-<title>LicitaMonitor</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0A0E17">
+  <link rel="manifest" href="./manifest.json">
+  <title>LicitaMonitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0A0E17;--bg2:#111827;--bg3:#1A2035;--bg4:#222B42;--brd:#1E293B;--brda:#334155;--txt:#F1F5F9;--txs:#CBD5E1;--txm:#64748B;--txd:#475569;--blue:#3B82F6;--blueg:rgba(59,130,246,.12);--blued:#2563EB;--green:#10B981;--greeng:rgba(16,185,129,.1);--amber:#F59E0B;--amberg:rgba(245,158,11,.1);--red:#EF4444;--redg:rgba(239,68,68,.08);--purple:#8B5CF6;--purpleg:rgba(139,92,246,.1);--cyan:#06B6D4;--cyang:rgba(6,182,212,.1);--r:16px;--rs:10px;--rr:8px;--f:'Instrument Sans',system-ui,sans-serif;--mono:'Space Mono',monospace;--shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2)}
-html{scroll-behavior:smooth}body{font-family:var(--f);background:var(--bg);color:var(--txt);min-height:100dvh;line-height:1.55;-webkit-font-smoothing:antialiased}
-nav{position:sticky;top:0;z-index:50;background:rgba(10,14,23,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--brd);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
-.nav-brand{display:flex;align-items:center;gap:10px}.nav-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:9px;display:grid;place-items:center;font:700 15px/1 var(--mono);color:#fff;letter-spacing:-1px}.nav-name{font-size:16px;font-weight:700;letter-spacing:-.3px}.nav-badge{font:500 10px/1 var(--mono);color:var(--txm);background:var(--bg3);padding:3px 8px;border-radius:20px;border:1px solid var(--brd)}
-.nav-status{display:flex;align-items:center;gap:6px;font:400 11px/1 var(--mono);color:var(--txm)}.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2.5s infinite}@keyframes blink{50%{opacity:.4}}
-main{max-width:960px;margin:0 auto;padding:16px}
-.install{background:linear-gradient(135deg,var(--blueg),var(--purpleg));border:1px solid rgba(59,130,246,.15);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:none;align-items:center;justify-content:space-between;gap:10px}.install.show{display:flex}.install-txt{font-size:13px;font-weight:500}.install-txt small{display:block;color:var(--txm);font-size:11px;font-weight:400;margin-top:1px}.install-btn{padding:7px 16px;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);font:600 12px var(--f);cursor:pointer}.install-x{background:none;border:none;color:var(--txm);font-size:16px;cursor:pointer;padding:2px}
-.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;overflow:hidden}.card-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd);cursor:pointer;user-select:none;transition:background .15s}.card-head:hover{background:var(--bg3)}.card-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}.card-title svg{width:16px;height:16px;color:var(--blue);flex-shrink:0}.card-toggle{font:500 11px var(--mono);color:var(--txm);transition:transform .2s}.card-body{padding:16px 18px}.card-body.collapsed{display:none}
-.portals{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}.portal{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg3);border:1px solid transparent;border-radius:var(--rs);text-decoration:none;color:var(--txt);transition:all .15s;font-size:12px;font-weight:500}.portal:hover{border-color:var(--brda);background:var(--bg4)}.portal-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.portal-dot.c1{background:var(--blue)}.portal-dot.c2{background:var(--amber)}.portal-dot.c3{background:var(--red)}.portal-dot.c4{background:var(--green)}.portal-dot.c5{background:var(--cyan)}.portal-dot.c6{background:var(--purple)}.portal-arrow{margin-left:auto;color:var(--txm);font-size:14px}
-.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}@media(max-width:600px){.fg{grid-template-columns:1fr}}.fg label{display:block;font:500 10px/1 var(--mono);color:var(--txm);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}.fg input,.fg select{width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--brd);border-radius:var(--rr);color:var(--txt);font:400 13px var(--f);outline:none;transition:border .15s}.fg input:focus,.fg select:focus{border-color:var(--blue)}.fg input[type=date]{font:400 12px var(--mono)}
-.uf-bar{margin-bottom:14px}.uf-presets{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}.uf-pre{font:500 10px var(--f);padding:4px 10px;background:none;border:1px solid var(--brd);border-radius:20px;color:var(--txm);cursor:pointer;transition:all .15s}.uf-pre:hover{border-color:var(--blue);color:var(--blue)}.uf-pre.on{background:var(--blue);color:#fff;border-color:var(--blue)}.uf-grid{display:flex;flex-wrap:wrap;gap:4px}.uf-chip{font:600 10px var(--mono);padding:4px 7px;background:none;border:1px solid var(--brd);border-radius:5px;color:var(--txd);cursor:pointer;transition:all .1s}.uf-chip:hover{color:var(--txs);border-color:var(--txm)}.uf-chip.on{background:var(--blueg);border-color:rgba(59,130,246,.35);color:var(--blue)}.uf-chip.on.df-hl{background:var(--amberg);border-color:rgba(245,158,11,.35);color:var(--amber)}
-.sl{font:500 10px/1 var(--mono);color:var(--txm);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px}
-.kw-bar{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}.kw{font:400 11px var(--mono);padding:4px 10px;background:none;border:1px solid var(--brd);border-radius:20px;color:var(--txd);cursor:pointer;transition:all .15s}.kw:hover{color:var(--txs);border-color:var(--txm)}.kw.on{background:var(--blueg);border-color:rgba(59,130,246,.2);color:var(--blue)}
-.actions{display:flex;gap:8px}.btn{padding:9px 20px;border-radius:var(--rr);font:600 13px var(--f);cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}.btn svg{width:14px;height:14px}.btn-p{background:var(--blue);color:#fff}.btn-p:hover{background:var(--blued)}.btn-p:disabled{opacity:.4;cursor:default}.btn-s{background:none;color:var(--txm);border:1px solid var(--brd)}.btn-s:hover{color:var(--txs);border-color:var(--txm)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}.stat{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--rs);padding:12px 14px}.stat-label{font:500 9px/1 var(--mono);color:var(--txm);text-transform:uppercase;letter-spacing:.6px}.stat-val{font:700 24px/1.2 var(--mono);margin-top:4px}.sv-blue{color:var(--blue)}.sv-green{color:var(--green)}.sv-amber{color:var(--amber)}.sv-cyan{color:var(--cyan)}
-.ruf-bar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;align-items:center}.ruf-label{font:500 10px var(--mono);color:var(--txm);margin-right:4px;text-transform:uppercase;letter-spacing:.5px}.ruf-chip{font:400 10px var(--mono);padding:3px 8px;background:var(--bg2);border:1px solid var(--brd);border-radius:20px;color:var(--txm);cursor:pointer;transition:all .12s}.ruf-chip:hover{border-color:var(--blue)}.ruf-chip.on{background:var(--blueg);border-color:rgba(59,130,246,.25);color:var(--blue)}.ruf-count{font-size:9px;opacity:.6;margin-left:1px}
-.res-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.res-count{font-size:13px;color:var(--txm)}.res-count b{color:var(--txt)}.sort-sel{padding:5px 8px;background:var(--bg);border:1px solid var(--brd);border-radius:var(--rr);color:var(--txm);font:400 11px var(--f);outline:none;cursor:pointer}
-.res-list{display:flex;flex-direction:column;gap:8px}
-.res-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:16px 18px;transition:all .15s;cursor:pointer;position:relative}.res-card:hover{background:var(--bg3);border-color:var(--brda)}.res-card.is-new{border-left:3px solid var(--green)}.new-tag{position:absolute;top:10px;right:12px;font:700 8px/1 var(--mono);padding:3px 7px;background:var(--greeng);color:var(--green);border-radius:10px;text-transform:uppercase;letter-spacing:.8px}
-.res-top{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}.uf-badge{font:700 9px/1 var(--mono);padding:3px 6px;border-radius:4px;letter-spacing:.3px}.ub-df{background:var(--amberg);color:var(--amber);border:1px solid rgba(245,158,11,.2)}.ub-go{background:var(--greeng);color:var(--green);border:1px solid rgba(16,185,129,.2)}.ub-x{background:var(--purpleg);color:var(--purple);border:1px solid rgba(139,92,246,.2)}.res-org{font:600 10px/1 var(--f);color:var(--blue);text-transform:uppercase;letter-spacing:.2px}.res-mod{font:400 9px/1 var(--mono);padding:3px 8px;border-radius:20px;margin-left:auto;white-space:nowrap}.mod-c{background:var(--blueg);color:var(--blue)}.mod-p{background:var(--greeng);color:var(--green)}.mod-d{background:var(--amberg);color:var(--amber)}.mod-o{background:var(--purpleg);color:var(--purple)}
-.res-obj{font-size:14px;font-weight:500;line-height:1.5;margin-bottom:10px}.res-obj mark{background:rgba(59,130,246,.15);color:var(--blue);padding:0 3px;border-radius:3px}
-.res-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--txm)}.res-meta svg{width:12px;height:12px;color:var(--txd);flex-shrink:0}.mi{display:flex;align-items:center;gap:4px}.mi b{color:var(--txt);font-weight:500}.mi .val{color:var(--green);font-family:var(--mono);font-weight:700}
-.res-link{display:inline-flex;align-items:center;gap:4px;font:500 11px var(--f);color:var(--blue);text-decoration:none;margin-top:8px}
-.loading{text-align:center;padding:48px 16px;display:none}.loading.on{display:block}.loader{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}@keyframes spin{to{transform:rotate(360deg)}}.load-txt{font-size:13px;color:var(--txm)}.load-det{font:400 11px var(--mono);color:var(--txd);margin-top:3px}
-.empty{text-align:center;padding:48px 16px;color:var(--txm)}.empty-icon{font-size:36px;margin-bottom:10px;opacity:.5}.empty-t{font-size:15px;font-weight:600;color:var(--txt);margin-bottom:4px}
-.error{background:var(--redg);border:1px solid rgba(239,68,68,.15);border-radius:var(--r);padding:14px 18px;display:none;align-items:flex-start;gap:8px;margin-bottom:12px;font-size:13px;color:var(--red)}.error.on{display:flex}.error b{display:block;margin-bottom:2px}.error small{color:var(--txm);font-size:11px}
-footer{text-align:center;padding:24px 16px;border-top:1px solid var(--brd);margin-top:32px;font:400 11px var(--f);color:var(--txd)}footer a{color:var(--txm);text-decoration:none}
-.fi{animation:fadeUp .25s ease-out both}@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* ============================================================
+   LicitaMonitor v3.0 — Estilos
+   ============================================================ */
+
+/* === RESET E VARIÁVEIS === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0A0E17;
+  --bg2: #111827;
+  --bg3: #1A2035;
+  --bg4: #222B42;
+  --brd: #1E293B;
+  --brda: #334155;
+  --txt: #F1F5F9;
+  --txs: #CBD5E1;
+  --txm: #64748B;
+  --txd: #475569;
+  --blue: #3B82F6;
+  --blueg: rgba(59, 130, 246, .12);
+  --blued: #2563EB;
+  --green: #10B981;
+  --greeng: rgba(16, 185, 129, .1);
+  --amber: #F59E0B;
+  --amberg: rgba(245, 158, 11, .1);
+  --red: #EF4444;
+  --redg: rgba(239, 68, 68, .08);
+  --purple: #8B5CF6;
+  --purpleg: rgba(139, 92, 246, .1);
+  --cyan: #06B6D4;
+  --cyang: rgba(6, 182, 212, .1);
+  --r: 16px;
+  --rs: 10px;
+  --rr: 8px;
+  --f: 'Instrument Sans', system-ui, sans-serif;
+  --mono: 'Space Mono', monospace;
+  --shadow: 0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.2);
+}
+
+/* === TIPOGRAFIA E BASE === */
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--f);
+  background: var(--bg);
+  color: var(--txt);
+  min-height: 100dvh;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === NAVEGAÇÃO === */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(10, 14, 23, .85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--brd);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-logo {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font: 700 15px/1 var(--mono);
+  color: #fff;
+  letter-spacing: -1px;
+}
+
+.nav-name { font-size: 16px; font-weight: 700; letter-spacing: -.3px; }
+
+.nav-badge {
+  font: 500 10px/1 var(--mono);
+  color: var(--txm);
+  background: var(--bg3);
+  padding: 3px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--brd);
+}
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 400 11px/1 var(--mono);
+  color: var(--txm);
+}
+
+.nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: blink 2.5s infinite;
+}
+
+@keyframes blink { 50% { opacity: .4; } }
+
+/* === CONTEÚDO PRINCIPAL === */
+main { max-width: 960px; margin: 0 auto; padding: 16px; }
+
+/* === BARRA DE PROGRESSO === */
+.progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 100;
+  background: transparent;
+  display: none;
+}
+
+.progress-bar-container.on { display: block; }
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  width: 0%;
+  transition: width 0.3s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+/* === BANNER DE INSTALAÇÃO === */
+.install {
+  background: linear-gradient(135deg, var(--blueg), var(--purpleg));
+  border: 1px solid rgba(59, 130, 246, .15);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.install.show { display: flex; }
+
+.install-txt { font-size: 13px; font-weight: 500; }
+.install-txt small { display: block; color: var(--txm); font-size: 11px; font-weight: 400; margin-top: 1px; }
+
+.install-btn {
+  padding: 7px 16px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--rs);
+  font: 600 12px var(--f);
+  cursor: pointer;
+}
+
+.install-x { background: none; border: none; color: var(--txm); font-size: 16px; cursor: pointer; padding: 2px; }
+
+/* === CARDS === */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--brd);
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+
+.card-head:hover { background: var(--bg3); }
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -.2px;
+}
+
+.card-title svg { width: 16px; height: 16px; color: var(--blue); flex-shrink: 0; }
+.card-toggle { font: 500 11px var(--mono); color: var(--txm); transition: transform .2s; }
+.card-body { padding: 16px 18px; }
+.card-body.collapsed { display: none; }
+
+/* === PORTAIS === */
+.portals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.portal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg3);
+  border: 1px solid transparent;
+  border-radius: var(--rs);
+  text-decoration: none;
+  color: var(--txt);
+  transition: all .15s;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.portal:hover { border-color: var(--brda); background: var(--bg4); }
+.portal-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.portal-dot.c1 { background: var(--blue); }
+.portal-dot.c2 { background: var(--amber); }
+.portal-dot.c3 { background: var(--red); }
+.portal-dot.c4 { background: var(--green); }
+.portal-dot.c5 { background: var(--cyan); }
+.portal-dot.c6 { background: var(--purple); }
+.portal-arrow { margin-left: auto; color: var(--txm); font-size: 14px; }
+
+/* === FILTROS === */
+.fg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.fg label {
+  display: block;
+  font: 500 10px/1 var(--mono);
+  color: var(--txm);
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  margin-bottom: 5px;
+}
+
+.fg input, .fg select {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: var(--rr);
+  color: var(--txt);
+  font: 400 13px var(--f);
+  outline: none;
+  transition: border .15s;
+}
+
+.fg input:focus, .fg select:focus { border-color: var(--blue); }
+.fg input[type=date] { font: 400 12px var(--mono); }
+
+/* === UF BAR === */
+.uf-bar { margin-bottom: 14px; }
+
+.uf-presets { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+
+.uf-pre {
+  font: 500 10px var(--f);
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: 20px;
+  color: var(--txm);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.uf-pre:hover { border-color: var(--blue); color: var(--blue); }
+
+.uf-pre.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+.uf-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.uf-chip {
+  font: 600 10px var(--mono);
+  padding: 4px 7px;
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: 5px;
+  color: var(--txd);
+  cursor: pointer;
+  transition: all .1s;
+}
+
+.uf-chip:hover { color: var(--txs); border-color: var(--txm); }
+.uf-chip.on { background: var(--blueg); border-color: rgba(59, 130, 246, .35); color: var(--blue); }
+.uf-chip.on.df-hl { background: var(--amberg); border-color: rgba(245, 158, 11, .35); color: var(--amber); }
+
+/* === LABELS === */
+.sl {
+  font: 500 10px/1 var(--mono);
+  color: var(--txm);
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* === KEYWORDS === */
+.kw-bar { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+
+.kw {
+  font: 400 11px var(--mono);
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: 20px;
+  color: var(--txd);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.kw:hover { color: var(--txs); border-color: var(--txm); }
+.kw.on { background: var(--blueg); border-color: rgba(59, 130, 246, .2); color: var(--blue); }
+
+/* === BOTÕES === */
+.actions { display: flex; gap: 8px; }
+
+.btn {
+  padding: 9px 20px;
+  border-radius: var(--rr);
+  font: 600 13px var(--f);
+  cursor: pointer;
+  transition: all .15s;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn svg { width: 14px; height: 14px; }
+.btn-p { background: var(--blue); color: #fff; }
+.btn-p:hover { background: var(--blued); }
+.btn-p:disabled { opacity: .4; cursor: default; }
+.btn-s { background: none; color: var(--txm); border: 1px solid var(--brd); }
+.btn-s:hover { color: var(--txs); border-color: var(--txm); }
+
+.btn-p .btn-spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+.btn-p.loading .btn-spinner { display: inline-block; }
+.btn-p.loading .btn-icon { display: none; }
+
+/* === ESTATÍSTICAS === */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.stat {
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: var(--rs);
+  padding: 12px 14px;
+}
+
+.stat-label {
+  font: 500 9px/1 var(--mono);
+  color: var(--txm);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+
+.stat-val { font: 700 24px/1.2 var(--mono); margin-top: 4px; }
+.sv-blue { color: var(--blue); }
+.sv-green { color: var(--green); }
+.sv-amber { color: var(--amber); }
+.sv-cyan { color: var(--cyan); }
+
+/* === BARRA DE UF NOS RESULTADOS === */
+.ruf-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.ruf-label {
+  font: 500 10px var(--mono);
+  color: var(--txm);
+  margin-right: 4px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.ruf-chip {
+  font: 400 10px var(--mono);
+  padding: 3px 8px;
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: 20px;
+  color: var(--txm);
+  cursor: pointer;
+  transition: all .12s;
+}
+
+.ruf-chip:hover { border-color: var(--blue); }
+.ruf-chip.on { background: var(--blueg); border-color: rgba(59, 130, 246, .25); color: var(--blue); }
+.ruf-count { font-size: 9px; opacity: .6; margin-left: 1px; }
+
+/* === CABEÇALHO DOS RESULTADOS === */
+.res-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.res-count { font-size: 13px; color: var(--txm); }
+.res-count b { color: var(--txt); }
+
+.sort-sel {
+  padding: 5px 8px;
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: var(--rr);
+  color: var(--txm);
+  font: 400 11px var(--f);
+  outline: none;
+  cursor: pointer;
+}
+
+/* === LISTA DE RESULTADOS === */
+.res-list { display: flex; flex-direction: column; gap: 8px; }
+
+.res-card {
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  transition: all .15s;
+  cursor: pointer;
+  position: relative;
+}
+
+.res-card:hover { background: var(--bg3); border-color: var(--brda); }
+.res-card.is-new { border-left: 3px solid var(--green); }
+
+.new-tag {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font: 700 8px/1 var(--mono);
+  padding: 3px 7px;
+  background: var(--greeng);
+  color: var(--green);
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+
+.res-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.uf-badge {
+  font: 700 9px/1 var(--mono);
+  padding: 3px 6px;
+  border-radius: 4px;
+  letter-spacing: .3px;
+}
+
+.ub-df { background: var(--amberg); color: var(--amber); border: 1px solid rgba(245, 158, 11, .2); }
+.ub-go { background: var(--greeng); color: var(--green); border: 1px solid rgba(16, 185, 129, .2); }
+.ub-x { background: var(--purpleg); color: var(--purple); border: 1px solid rgba(139, 92, 246, .2); }
+
+.res-org {
+  font: 600 10px/1 var(--f);
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: .2px;
+}
+
+.res-mod {
+  font: 400 9px/1 var(--mono);
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.mod-c { background: var(--blueg); color: var(--blue); }
+.mod-p { background: var(--greeng); color: var(--green); }
+.mod-d { background: var(--amberg); color: var(--amber); }
+.mod-o { background: var(--purpleg); color: var(--purple); }
+
+.res-obj { font-size: 14px; font-weight: 500; line-height: 1.5; margin-bottom: 10px; }
+.res-obj mark { background: rgba(59, 130, 246, .15); color: var(--blue); padding: 0 3px; border-radius: 3px; }
+
+.res-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--txm);
+}
+
+.res-meta svg { width: 12px; height: 12px; color: var(--txd); flex-shrink: 0; }
+.mi { display: flex; align-items: center; gap: 4px; }
+.mi b { color: var(--txt); font-weight: 500; }
+.mi .val { color: var(--green); font-family: var(--mono); font-weight: 700; }
+
+.res-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 500 11px var(--f);
+  color: var(--blue);
+  text-decoration: none;
+  margin-top: 8px;
+}
+
+/* === LOADING === */
+.loading { text-align: center; padding: 48px 16px; display: none; }
+.loading.on { display: block; }
+
+.loader {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--brd);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.load-txt { font-size: 13px; color: var(--txm); }
+.load-det { font: 400 11px var(--mono); color: var(--txd); margin-top: 3px; }
+
+/* === VAZIO === */
+.empty { text-align: center; padding: 48px 16px; color: var(--txm); }
+.empty-icon { font-size: 36px; margin-bottom: 10px; opacity: .5; }
+.empty-t { font-size: 15px; font-weight: 600; color: var(--txt); margin-bottom: 4px; }
+
+/* === ERRO === */
+.error {
+  background: var(--redg);
+  border: 1px solid rgba(239, 68, 68, .15);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  display: none;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--red);
+}
+
+.error.on { display: flex; }
+.error b { display: block; margin-bottom: 2px; }
+.error small { color: var(--txm); font-size: 11px; }
+
+/* === FOOTER === */
+footer {
+  text-align: center;
+  padding: 24px 16px;
+  border-top: 1px solid var(--brd);
+  margin-top: 32px;
+  font: 400 11px var(--f);
+  color: var(--txd);
+}
+
+footer a { color: var(--txm); text-decoration: none; }
+
+/* === BOTÃO VOLTAR AO TOPO === */
+.scroll-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 40px;
+  height: 40px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, .3);
+  pointer-events: none;
+}
+
+.scroll-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.scroll-top:hover { background: var(--blued); }
+
+/* === ANIMAÇÕES === */
+.fi { animation: fadeUp .25s ease-out both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+  .fg { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
+
 <body>
-<nav><div class="nav-brand"><div class="nav-logo">LM</div><span class="nav-name">LicitaMonitor</span><span class="nav-badge">v2.0</span></div><div class="nav-status"><span class="nav-dot"></span><span id="stTxt">Iniciando</span></div></nav>
+
+<!-- Barra de progresso fixa no topo -->
+<div class="progress-bar-container" id="progressBar">
+  <div class="progress-bar-fill" id="progressFill"></div>
+</div>
+
+<!-- Navegação -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">LM</div>
+    <span class="nav-name">LicitaMonitor</span>
+    <span class="nav-badge">v3.0</span>
+  </div>
+  <div class="nav-status">
+    <span class="nav-dot"></span>
+    <span id="stTxt">Iniciando</span>
+  </div>
+</nav>
+
 <main>
-<div class="install" id="installB"><div class="install-txt">Instalar na tela inicial<small>Acesso rápido como app nativo</small></div><div style="display:flex;gap:6px;align-items:center"><button class="install-btn" id="installBtn">Instalar</button><button class="install-x" onclick="document.getElementById('installB').classList.remove('show')">×</button></div></div>
-<div class="card"><div class="card-head" onclick="tog('portais')"><span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Portais</span><span class="card-toggle" id="tog-portais">▼</span></div><div class="card-body" id="body-portais"><div class="portals"><a class="portal" href="https://pncp.gov.br/app/editais?q=pavimenta%C3%A7%C3%A3o&uf=DF" target="_blank"><span class="portal-dot c1"></span>PNCP<span class="portal-arrow">→</span></a><a class="portal" href="https://dodf.df.gov.br/" target="_blank"><span class="portal-dot c5"></span>DODF<span class="portal-arrow">→</span></a><a class="portal" href="https://portal.compras.df.gov.br/licitacao" target="_blank"><span class="portal-dot c2"></span>Compras DF<span class="portal-arrow">→</span></a><a class="portal" href="http://app.novacap.df.gov.br/sislicitapublica/" target="_blank"><span class="portal-dot c3"></span>NOVACAP<span class="portal-arrow">→</span></a><a class="portal" href="https://www.gov.br/compras/pt-br/acesso-a-informacao/consulta-detalhada" target="_blank"><span class="portal-dot c4"></span>Compras.gov<span class="portal-arrow">→</span></a><a class="portal" href="https://www.sinj.df.gov.br/sinj/" target="_blank"><span class="portal-dot c6"></span>SINJ-DF<span class="portal-arrow">→</span></a></div></div></div>
-<div class="card"><div class="card-head" onclick="tog('filtros')"><span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8.5V18l-4 2V12.5L3 4z"/></svg>Filtros PNCP</span><span class="card-toggle" id="tog-filtros">▼</span></div><div class="card-body" id="body-filtros"><div class="fg"><div><label>Data inicial</label><input type="date" id="dI"/></div><div><label>Data final</label><input type="date" id="dF"/></div><div><label>Modalidade</label><select id="mod"><option value="">Todas</option><option value="4">Concorrência Eletrônica</option><option value="5">Concorrência Presencial</option><option value="6">Pregão Eletrônico</option><option value="8">Dispensa de Licitação</option><option value="9">Inexigibilidade</option><option value="12">Credenciamento</option></select></div></div><div class="uf-bar"><span class="sl">Estados</span><div class="uf-presets"><button class="uf-pre" onclick="ufP('df')">DF</button><button class="uf-pre" onclick="ufP('dg')">DF+GO</button><button class="uf-pre" onclick="ufP('dv')">DF+Vizinhos</button><button class="uf-pre" onclick="ufP('all')">Todos</button><button class="uf-pre" onclick="ufP('x')">Limpar</button></div><div class="uf-grid" id="ufG"></div></div><span class="sl">Palavras-chave</span><div class="kw-bar"><span class="kw on" data-k="paviment">pavimentação</span><span class="kw on" data-k="cbuq">CBUQ</span><span class="kw on" data-k="fresag">fresagem</span><span class="kw on" data-k="terraplenag">terraplenagem</span><span class="kw on" data-k="asfalt">asfalto</span><span class="kw on" data-k="drenag">drenagem</span><span class="kw on" data-k="recapeamento">recapeamento</span><span class="kw on" data-k="infra.*vi[aá]r">infra viária</span><span class="kw on" data-k="tapa.?buraco">tapa-buraco</span><span class="kw on" data-k="meio.?fio">meio-fio</span><span class="kw on" data-k="sinaliza[çc][ãa]o.*vi[aá]r">sinal. viária</span><span class="kw on" data-k="base.*granular">base granular</span></div><div class="actions"><button class="btn btn-p" id="btnB" onclick="buscar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Buscar</button><button class="btn btn-s" onclick="limpar()">Limpar</button></div></div></div>
-<div class="stats" id="sBar" style="display:none"><div class="stat"><div class="stat-label">Encontradas</div><div class="stat-val sv-blue" id="sT">0</div></div><div class="stat"><div class="stat-label">Valor total</div><div class="stat-val sv-green" id="sV">R$ 0</div></div><div class="stat"><div class="stat-label">Abertas</div><div class="stat-val sv-amber" id="sA">0</div></div><div class="stat"><div class="stat-label">Novas</div><div class="stat-val sv-cyan" id="sN">0</div></div></div>
-<div class="error" id="errS"><span>⚠</span><div id="errT"></div></div>
-<div class="loading" id="ldS"><div class="loader"></div><div class="load-txt">Consultando PNCP...</div><div class="load-det" id="ldD"></div></div>
-<div id="resC"></div>
+
+  <!-- Banner de instalação PWA -->
+  <div class="install" id="installB">
+    <div class="install-txt">
+      Instalar na tela inicial
+      <small>Acesso rápido como app nativo</small>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="install-btn" id="installBtn">Instalar</button>
+      <button class="install-x" id="installClose">&times;</button>
+    </div>
+  </div>
+
+  <!-- Card: Portais -->
+  <div class="card">
+    <div class="card-head" onclick="alternarCard('portais')">
+      <span class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        Portais
+      </span>
+      <span class="card-toggle" id="tog-portais">&#9660;</span>
+    </div>
+    <div class="card-body" id="body-portais">
+      <div class="portals">
+        <a class="portal" href="https://pncp.gov.br/app/editais?q=pavimenta%C3%A7%C3%A3o&uf=DF" target="_blank" rel="noopener">
+          <span class="portal-dot c1"></span>PNCP<span class="portal-arrow">&rarr;</span>
+        </a>
+        <a class="portal" href="https://dodf.df.gov.br/" target="_blank" rel="noopener">
+          <span class="portal-dot c5"></span>DODF<span class="portal-arrow">&rarr;</span>
+        </a>
+        <a class="portal" href="https://portal.compras.df.gov.br/licitacao" target="_blank" rel="noopener">
+          <span class="portal-dot c2"></span>Compras DF<span class="portal-arrow">&rarr;</span>
+        </a>
+        <a class="portal" href="http://app.novacap.df.gov.br/sislicitapublica/" target="_blank" rel="noopener">
+          <span class="portal-dot c3"></span>NOVACAP<span class="portal-arrow">&rarr;</span>
+        </a>
+        <a class="portal" href="https://www.gov.br/compras/pt-br/acesso-a-informacao/consulta-detalhada" target="_blank" rel="noopener">
+          <span class="portal-dot c4"></span>Compras.gov<span class="portal-arrow">&rarr;</span>
+        </a>
+        <a class="portal" href="https://www.sinj.df.gov.br/sinj/" target="_blank" rel="noopener">
+          <span class="portal-dot c6"></span>SINJ-DF<span class="portal-arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card: Filtros PNCP -->
+  <div class="card">
+    <div class="card-head" onclick="alternarCard('filtros')">
+      <span class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 4h18l-7 8.5V18l-4 2V12.5L3 4z"/>
+        </svg>
+        Filtros PNCP
+      </span>
+      <span class="card-toggle" id="tog-filtros">&#9660;</span>
+    </div>
+    <div class="card-body" id="body-filtros">
+
+      <!-- Datas e Modalidade -->
+      <div class="fg">
+        <div>
+          <label>Data inicial</label>
+          <input type="date" id="dI"/>
+        </div>
+        <div>
+          <label>Data final</label>
+          <input type="date" id="dF"/>
+        </div>
+        <div>
+          <label>Modalidade</label>
+          <select id="mod">
+            <option value="">Todas</option>
+            <option value="4">Concorrência Eletrônica</option>
+            <option value="5">Concorrência Presencial</option>
+            <option value="6">Pregão Eletrônico</option>
+            <option value="8">Dispensa de Licitação</option>
+            <option value="9">Inexigibilidade</option>
+            <option value="12">Credenciamento</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- UF -->
+      <div class="uf-bar">
+        <span class="sl">Estados</span>
+        <div class="uf-presets">
+          <button class="uf-pre" onclick="aplicarPresetUF('df')">DF</button>
+          <button class="uf-pre" onclick="aplicarPresetUF('dg')">DF+GO</button>
+          <button class="uf-pre" onclick="aplicarPresetUF('dv')">DF+Vizinhos</button>
+          <button class="uf-pre" onclick="aplicarPresetUF('all')">Todos</button>
+          <button class="uf-pre" onclick="aplicarPresetUF('x')">Limpar</button>
+        </div>
+        <div class="uf-grid" id="ufG"></div>
+      </div>
+
+      <!-- Palavras-chave -->
+      <span class="sl">Palavras-chave</span>
+      <div class="kw-bar">
+        <span class="kw on" data-k="paviment">pavimentação</span>
+        <span class="kw on" data-k="cbuq">CBUQ</span>
+        <span class="kw on" data-k="fresag">fresagem</span>
+        <span class="kw on" data-k="terraplenag">terraplenagem</span>
+        <span class="kw on" data-k="asfalt">asfalto</span>
+        <span class="kw on" data-k="drenag">drenagem</span>
+        <span class="kw on" data-k="recapeamento">recapeamento</span>
+        <span class="kw on" data-k="infra.*vi[aá]r">infra viária</span>
+        <span class="kw on" data-k="tapa.?buraco">tapa-buraco</span>
+        <span class="kw on" data-k="meio.?fio">meio-fio</span>
+        <span class="kw on" data-k="sinaliza[çc][ãa]o.*vi[aá]r">sinal. viária</span>
+        <span class="kw on" data-k="base.*granular">base granular</span>
+      </div>
+
+      <!-- Ações -->
+      <div class="actions">
+        <button class="btn btn-p" id="btnB" onclick="buscar()">
+          <span class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </span>
+          <span class="btn-spinner"></span>
+          Buscar
+        </button>
+        <button class="btn btn-s" onclick="limpar()">Limpar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Estatísticas -->
+  <div class="stats" id="sBar" style="display:none">
+    <div class="stat">
+      <div class="stat-label">Encontradas</div>
+      <div class="stat-val sv-blue" id="sT">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Valor total</div>
+      <div class="stat-val sv-green" id="sV">R$ 0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Abertas</div>
+      <div class="stat-val sv-amber" id="sA">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Novas</div>
+      <div class="stat-val sv-cyan" id="sN">0</div>
+    </div>
+  </div>
+
+  <!-- Erro -->
+  <div class="error" id="errS">
+    <span>&#9888;</span>
+    <div id="errT"></div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="ldS">
+    <div class="loader"></div>
+    <div class="load-txt">Consultando PNCP...</div>
+    <div class="load-det" id="ldD"></div>
+  </div>
+
+  <!-- Container de resultados -->
+  <div id="resC"></div>
+
 </main>
-<footer>LicitaMonitor v2.0 · <a href="https://pncp.gov.br" target="_blank">API PNCP</a></footer>
+
+<!-- Botão voltar ao topo -->
+<button class="scroll-top" id="scrollTopBtn" aria-label="Voltar ao topo">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+
+<footer>LicitaMonitor v3.0 · <a href="https://pncp.gov.br" target="_blank" rel="noopener">API PNCP</a></footer>
+
 <script>
-let deferredPrompt;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installB').classList.add('show')});document.getElementById('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('installB').classList.remove('show')});if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');
-const API='https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao',UFS=['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'],PRE={df:['DF'],dg:['DF','GO'],dv:['DF','GO','MG','BA','SP'],all:[],x:[]},SK='lm_seen_v2';
-const hj=new Date(),t30=new Date(hj);t30.setDate(hj.getDate()-30);document.getElementById('dF').value=fd(hj);document.getElementById('dI').value=fd(t30);
-const ufG=document.getElementById('ufG');UFS.forEach(u=>{const e=document.createElement('span');e.className='uf-chip'+(u==='DF'?' on df-hl':'');e.textContent=u;e.dataset.u=u;e.onclick=()=>{e.classList.toggle('on');if(u==='DF')e.classList.toggle('df-hl',e.classList.contains('on'));uqb()};ufG.appendChild(e)});document.querySelectorAll('.kw').forEach(t=>t.onclick=()=>t.classList.toggle('on'));
-function tog(id){const b=document.getElementById('body-'+id),t=document.getElementById('tog-'+id);b.classList.toggle('collapsed');t.textContent=b.classList.contains('collapsed')?'▶':'▼'}
-function gUF(){return[...document.querySelectorAll('.uf-chip.on')].map(e=>e.dataset.u)}function ufP(p){const u=PRE[p]||[];document.querySelectorAll('.uf-chip').forEach(e=>{const a=u.length?u.includes(e.dataset.u):false;e.classList.toggle('on',a);if(e.dataset.u==='DF')e.classList.toggle('df-hl',a)});uqb()}function uqb(){const s=gUF().sort().join(',');document.querySelectorAll('.uf-pre').forEach(b=>b.classList.remove('on'));const m={'DF':0,'DF,GO':1,'BA,DF,GO,MG,SP':2,'':3};const i=m[s];if(i!==undefined)[...document.querySelectorAll('.uf-pre')][i]?.classList.add('on')}uqb();
-function fd(d){return d.toISOString().split('T')[0]}function fa(s){return s.replace(/-/g,'')}function fc(v){if(!v&&v!==0)return'—';if(v>=1e9)return'R$ '+(v/1e9).toFixed(1)+'B';if(v>=1e6)return'R$ '+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+'k';return'R$ '+v.toLocaleString('pt-BR')}function fcF(v){if(!v&&v!==0)return'—';return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:0}).format(v)}function fdt(s){if(!s)return'—';try{return new Date(s).toLocaleDateString('pt-BR')}catch{return s}}function gKW(){return[...document.querySelectorAll('.kw.on')].map(t=>t.dataset.k)}function mKW(t,k){if(!t)return false;const l=t.toLowerCase();return k.some(w=>{try{return new RegExp(w,'i').test(l)}catch{return l.includes(w)}})}function hKW(t,k){if(!t)return'';let r=t;k.forEach(w=>{try{r=r.replace(new RegExp('('+w+')','gi'),'<mark>$1</mark>')}catch{}});return r}function mCl(n){if(!n)return'mod-o';const l=n.toLowerCase();if(l.includes('concorr'))return'mod-c';if(l.includes('preg'))return'mod-p';if(l.includes('dispensa'))return'mod-d';return'mod-o'}function eUF(i){if(i.unidadeOrgao?.ufSigla)return i.unidadeOrgao.ufSigla;if(i.orgaoEntidade?.ufSigla)return i.orgaoEntidade.ufSigla;if(i.ufSigla)return i.ufSigla;const r=(i.orgaoEntidade?.razaoSocial||'').toUpperCase();if(r.includes('DISTRITO FEDERAL')||r.includes('NOVACAP')||r.includes('/DF'))return'DF';if(r.includes('GOIÁS')||r.includes('GOIAS')||r.includes('/GO'))return'GO';return i.uf||'??'}function ubCl(u){return u==='DF'?'ub-df':u==='GO'?'ub-go':'ub-x'}function getSeen(){try{return JSON.parse(localStorage.getItem(SK)||'[]')}catch{return[]}}function saveSeen(ids){try{localStorage.setItem(SK,JSON.stringify(ids.slice(-500)))}catch{}}
-let allR=[],filtR=[],actUF=null;
-window.addEventListener('load',()=>setTimeout(buscar,400));
-async function buscar(){const di=document.getElementById('dI').value,df=document.getElementById('dF').value,mod=document.getElementById('mod').value,ufs=gUF(),kws=gKW();if(!di||!df){shErr('Preencha as datas.');return}if(!kws.length){shErr('Ative pelo menos 1 palavra-chave.');return}hErr();allR=[];filtR=[];actUF=null;document.getElementById('resC').innerHTML='';document.getElementById('sBar').style.display='none';shLd(true);stTxt('Buscando...');document.getElementById('btnB').disabled=true;try{let all=[];const ub=ufs.length?ufs:[''];for(const u of ub){let pg=1,tp=1;while(pg<=tp&&pg<=15){document.getElementById('ldD').textContent=(u||'BR')+' · pág '+pg+(tp>1?'/'+tp:'');const p=new URLSearchParams({dataInicial:fa(di),dataFinal:fa(df),pagina:pg,tamanhoPagina:'50'});if(u)p.set('uf',u);if(mod)p.set('codigoModalidadeContratacao',mod);const res=await fetch(API+'?'+p);if(!res.ok){if(res.status===404)break;throw new Error('HTTP '+res.status)}const d=await res.json();if(!d.data||!d.data.length)break;d.data.forEach(i=>i._uf=u||eUF(i));all=all.concat(d.data);tp=d.totalPaginas||1;pg++;await new Promise(r=>setTimeout(r,250))}}const seen=new Set();allR=all.filter(i=>{const t=[i.objetoCompra,i.orgaoEntidade?.razaoSocial,i.descricao].filter(Boolean).join(' ');return mKW(t,kws)}).filter(i=>{const id=i.numeroControlePNCP||JSON.stringify(i);if(seen.has(id))return false;seen.add(id);return true});const prev=getSeen(),cur=allR.map(i=>i.numeroControlePNCP).filter(Boolean);allR.forEach(i=>{i._isNew=i.numeroControlePNCP&&!prev.includes(i.numeroControlePNCP)});saveSeen([...new Set([...prev,...cur])]);filtR=[...allR];shLd(false);render(filtR,kws);stats(filtR);const nc=allR.filter(i=>i._isNew).length;stTxt(filtR.length+' licit.'+(nc?' · '+nc+' novas':''))}catch(e){shLd(false);shErr(e.message.includes('fetch')?'CORS — use links diretos':'Erro: '+e.message);stTxt('Erro')}document.getElementById('btnB').disabled=false}
-function render(res,kws){const c=document.getElementById('resC');if(!res.length){c.innerHTML='<div class="empty fi"><div class="empty-icon">🔍</div><div class="empty-t">Nenhuma licitação</div><p>Amplie o período ou altere filtros.</p></div>';return}const uc={};allR.forEach(i=>{const u=i._uf||'??';uc[u]=(uc[u]||0)+1});const su=Object.entries(uc).sort((a,b)=>a[0]==='DF'?-1:b[0]==='DF'?1:b[1]-a[1]);let h='<div class="res-head"><div class="res-count"><b>'+res.length+'</b> licitações</div><select class="sort-sel" onchange="srt(this.value)"><option value="dd">Recentes</option><option value="da">Antigas</option><option value="vd">Maior R$</option><option value="va">Menor R$</option></select></div>';if(su.length>1){h+='<div class="ruf-bar"><span class="ruf-label">UF:</span><span class="ruf-chip'+(actUF?'':' on')+'" onclick="fUF(null)">Todas<span class="ruf-count"> '+allR.length+'</span></span>';su.forEach(([u,n])=>{h+='<span class="ruf-chip'+(actUF===u?' on':'')+'" onclick="fUF(\''+u+'\')">'+u+'<span class="ruf-count"> '+n+'</span></span>'});h+='</div>'}h+='<div class="res-list">';res.forEach((i,idx)=>{const org=i.orgaoEntidade?.razaoSocial||'—',obj=i.objetoCompra||'',mod=i.modalidadeNome||i.modalidadeLicitacaoNome||'',val=i.valorTotalEstimado||i.valorTotalHomologado||null,dAb=i.dataAberturaProposta||i.dataEncerramentoProposta||null,sit=i.situacaoCompraNome||'',uf=i._uf||'??',ano=i.anoCompra||'',seq=i.sequencialCompra||'',cnpj=i.orgaoEntidade?.cnpj||'';let lk='#';if(cnpj&&ano&&seq)lk='https://pncp.gov.br/app/editais/'+cnpj+'/'+ano+'/'+seq;const nw=i._isNew;h+='<div class="res-card fi'+(nw?' is-new':'')+'" style="animation-delay:'+Math.min(idx*.02,.3)+'s" onclick="window.open(\''+lk+'\',\'_blank\')">'+(nw?'<span class="new-tag">Nova</span>':'')+'<div class="res-top"><span class="uf-badge '+ubCl(uf)+'">'+uf+'</span><span class="res-org">'+org+'</span>'+(mod?'<span class="res-mod '+mCl(mod)+'">'+mod+'</span>':'')+'</div><div class="res-obj">'+hKW(obj,kws)+'</div><div class="res-meta">'+(val?'<span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span class="val">'+fcF(val)+'</span></span>':'')+(dAb?'<span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><b>'+fdt(dAb)+'</b></span>':'')+(sit?'<span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><b>'+sit+'</b></span>':'')+'</div><a class="res-link" href="'+lk+'" target="_blank" onclick="event.stopPropagation()">Ver no PNCP →</a></div>'});h+='</div>';c.innerHTML=h}
-function fUF(u){actUF=u;filtR=u?allR.filter(i=>i._uf===u):[...allR];render(filtR,gKW());stats(filtR)}function srt(m){switch(m){case'dd':filtR.sort((a,b)=>new Date(b.dataPublicacaoPncp||0)-new Date(a.dataPublicacaoPncp||0));break;case'da':filtR.sort((a,b)=>new Date(a.dataPublicacaoPncp||0)-new Date(b.dataPublicacaoPncp||0));break;case'vd':filtR.sort((a,b)=>(b.valorTotalEstimado||0)-(a.valorTotalEstimado||0));break;case'va':filtR.sort((a,b)=>(a.valorTotalEstimado||0)-(b.valorTotalEstimado||0));break}render(filtR,gKW())}function stats(r){document.getElementById('sBar').style.display='grid';document.getElementById('sT').textContent=r.length;document.getElementById('sV').textContent=fc(r.reduce((s,i)=>s+(i.valorTotalEstimado||0),0));document.getElementById('sA').textContent=r.filter(i=>(i.situacaoCompraNome||'').toLowerCase().match(/divulgada|aberta|publicada/)).length;document.getElementById('sN').textContent=r.filter(i=>i._isNew).length}
-function shLd(s){document.getElementById('ldS').classList.toggle('on',s)}function stTxt(t){document.getElementById('stTxt').textContent=t}function shErr(t){document.getElementById('errT').innerHTML='<b>'+t+'</b>';document.getElementById('errS').classList.add('on')}function hErr(){document.getElementById('errS').classList.remove('on')}function limpar(){allR=[];filtR=[];actUF=null;document.getElementById('resC').innerHTML='';document.getElementById('sBar').style.display='none';hErr();stTxt('Pronto')}
+// ============================================================
+// LicitaMonitor v3.0 — Monitor de Licitações de Infraestrutura
+// ============================================================
+
+// === CONFIGURAÇÃO ===
+const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
+
+const LISTA_UFS = [
+  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT',
+  'PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'
+];
+
+const PRESETS_UF = {
+  df: ['DF'],
+  dg: ['DF', 'GO'],
+  dv: ['DF', 'GO', 'MG', 'BA', 'SP'],
+  all: [],  // vazio = usar LISTA_UFS completa na busca
+  x: []     // vazio = limpar seleção
+};
+
+const CHAVE_VISTOS = 'lm_seen_v3';
+
+// === ESTADO DA APLICAÇÃO ===
+let todosResultados = [];
+let resultadosFiltrados = [];
+let ufAtiva = null;
+let deferredPrompt = null;
+let ufParaBuscar = []; // referência para barra de progresso
+
+// === INICIALIZAÇÃO PWA ===
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installB').classList.add('show');
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installB').classList.remove('show');
+});
+
+document.getElementById('installClose').addEventListener('click', () => {
+  document.getElementById('installB').classList.remove('show');
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+
+// === INICIALIZAÇÃO DE DATAS ===
+const hoje = new Date();
+const trintaDiasAtras = new Date(hoje);
+trintaDiasAtras.setDate(hoje.getDate() - 30);
+document.getElementById('dF').value = formatarData(hoje);
+document.getElementById('dI').value = formatarData(trintaDiasAtras);
+
+// === INICIALIZAÇÃO DO GRID DE UFs ===
+const ufGridEl = document.getElementById('ufG');
+LISTA_UFS.forEach((uf) => {
+  const chip = document.createElement('span');
+  chip.className = 'uf-chip' + (uf === 'DF' ? ' on df-hl' : '');
+  chip.textContent = uf;
+  chip.dataset.u = uf;
+  chip.onclick = () => {
+    chip.classList.toggle('on');
+    if (uf === 'DF') chip.classList.toggle('df-hl', chip.classList.contains('on'));
+    atualizarBotoesPresetUF();
+  };
+  ufGridEl.appendChild(chip);
+});
+
+// Clique nas keywords
+document.querySelectorAll('.kw').forEach((tag) => {
+  tag.onclick = () => tag.classList.toggle('on');
+});
+
+// === FUNÇÕES UTILITÁRIAS ===
+
+/** Formata Date para string YYYY-MM-DD */
+function formatarData(data) {
+  return data.toISOString().split('T')[0];
+}
+
+/** Formata string de data para API PNCP (remove hífens) */
+function formatarDataAPI(str) {
+  return str.replace(/-/g, '');
+}
+
+/**
+ * [BUG 2 CORRIGIDO] Formata valor monetário de forma compacta para stats bar.
+ * Usa Intl.NumberFormat com notation compact.
+ */
+function formatarMoedaCompacta(valor) {
+  if (!valor && valor !== 0) return '\u2014';
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    notation: 'compact',
+    compactDisplay: 'short',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1,
+  }).format(valor);
+}
+
+/** Formata valor monetário completo para cards individuais. */
+function formatarMoedaCompleta(valor) {
+  if (!valor && valor !== 0) return '\u2014';
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(valor);
+}
+
+/** Formata data para exibição no formato pt-BR */
+function formatarDataExibicao(str) {
+  if (!str) return '\u2014';
+  try {
+    return new Date(str).toLocaleDateString('pt-BR');
+  } catch {
+    return str;
+  }
+}
+
+/** Retorna array de keywords ativas */
+function obterPalavrasChave() {
+  return [...document.querySelectorAll('.kw.on')].map((t) => t.dataset.k);
+}
+
+/** Verifica se texto contém alguma das keywords (regex) */
+function correspondeKeywords(texto, keywords) {
+  if (!texto) return false;
+  const lower = texto.toLowerCase();
+  return keywords.some((kw) => {
+    try { return new RegExp(kw, 'i').test(lower); }
+    catch { return lower.includes(kw); }
+  });
+}
+
+/** Destaca keywords no texto com <mark> */
+function destacarKeywords(texto, keywords) {
+  if (!texto) return '';
+  let resultado = texto;
+  keywords.forEach((kw) => {
+    try {
+      resultado = resultado.replace(new RegExp('(' + kw + ')', 'gi'), '<mark>$1</mark>');
+    } catch { /* regex inválida, ignorar */ }
+  });
+  return resultado;
+}
+
+/** Retorna classe CSS para a modalidade */
+function classeModalidade(nome) {
+  if (!nome) return 'mod-o';
+  const lower = nome.toLowerCase();
+  if (lower.includes('concorr')) return 'mod-c';
+  if (lower.includes('preg')) return 'mod-p';
+  if (lower.includes('dispensa')) return 'mod-d';
+  return 'mod-o';
+}
+
+/**
+ * [BUG 5 CORRIGIDO] Extrai UF do item da API.
+ * Adiciona .trim().toUpperCase() para evitar espaços.
+ */
+function extrairUF(item) {
+  const ufDireta = (
+    item.unidadeOrgao?.ufSigla ||
+    item.orgaoEntidade?.ufSigla ||
+    item.ufSigla ||
+    ''
+  ).trim().toUpperCase();
+
+  if (ufDireta && ufDireta.length === 2) return ufDireta;
+
+  // Fallback: inferir do nome do órgão
+  const razaoSocial = (item.orgaoEntidade?.razaoSocial || '').toUpperCase().trim();
+  if (razaoSocial.includes('DISTRITO FEDERAL') ||
+      razaoSocial.includes('NOVACAP') ||
+      razaoSocial.includes('/DF')) return 'DF';
+  if (razaoSocial.includes('GOIÁS') ||
+      razaoSocial.includes('GOIAS') ||
+      razaoSocial.includes('/GO')) return 'GO';
+
+  return (item.uf || '??').trim();
+}
+
+/** Retorna classe CSS para o badge de UF */
+function classeUFBadge(uf) {
+  if (uf === 'DF') return 'ub-df';
+  if (uf === 'GO') return 'ub-go';
+  return 'ub-x';
+}
+
+/**
+ * [BUG 4 CORRIGIDO] Obtém IDs de licitações já vistas.
+ * Agora com log de erro.
+ */
+function obterVistos() {
+  try {
+    return JSON.parse(localStorage.getItem(CHAVE_VISTOS) || '[]');
+  } catch (erro) {
+    console.warn('[LicitaMonitor] Erro ao ler localStorage:', erro.message);
+    return [];
+  }
+}
+
+/**
+ * [BUG 4 CORRIGIDO] Salva IDs de licitações vistas.
+ * Agora com log de erro e tratamento de QuotaExceededError.
+ */
+function salvarVistos(ids) {
+  try {
+    localStorage.setItem(CHAVE_VISTOS, JSON.stringify(ids.slice(-500)));
+  } catch (erro) {
+    console.warn('[LicitaMonitor] Erro ao salvar localStorage:', erro.message);
+    if (erro.name === 'QuotaExceededError') {
+      console.warn('[LicitaMonitor] localStorage cheio. Reduzindo dados...');
+      try {
+        localStorage.setItem(CHAVE_VISTOS, JSON.stringify(ids.slice(-100)));
+      } catch { /* não é possível usar localStorage */ }
+    }
+  }
+}
+
+/** Aguarda N milissegundos */
+function aguardar(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// === FUNÇÕES DE UI ===
+
+/** Alterna visibilidade do corpo do card */
+function alternarCard(id) {
+  const body = document.getElementById('body-' + id);
+  const toggle = document.getElementById('tog-' + id);
+  body.classList.toggle('collapsed');
+  toggle.innerHTML = body.classList.contains('collapsed') ? '&#9654;' : '&#9660;';
+}
+
+/** Retorna array de UFs selecionadas */
+function obterUFsSelecionadas() {
+  return [...document.querySelectorAll('.uf-chip.on')].map((e) => e.dataset.u);
+}
+
+/** Aplica preset de UF */
+function aplicarPresetUF(preset) {
+  const ufs = PRESETS_UF[preset] || [];
+  document.querySelectorAll('.uf-chip').forEach((chip) => {
+    const ativo = ufs.length ? ufs.includes(chip.dataset.u) : false;
+    chip.classList.toggle('on', ativo);
+    if (chip.dataset.u === 'DF') chip.classList.toggle('df-hl', ativo);
+  });
+  atualizarBotoesPresetUF();
+}
+
+/** Atualiza estado visual dos botões de preset de UF */
+function atualizarBotoesPresetUF() {
+  const selecionadas = obterUFsSelecionadas().sort().join(',');
+  document.querySelectorAll('.uf-pre').forEach((btn) => btn.classList.remove('on'));
+  const mapa = { 'DF': 0, 'DF,GO': 1, 'BA,DF,GO,MG,SP': 2, '': 3 };
+  const indice = mapa[selecionadas];
+  if (indice !== undefined) {
+    [...document.querySelectorAll('.uf-pre')][indice]?.classList.add('on');
+  }
+}
+
+// Inicializar estado dos presets
+atualizarBotoesPresetUF();
+
+/** Mostra/esconde loading */
+function mostrarLoading(visivel) {
+  document.getElementById('ldS').classList.toggle('on', visivel);
+}
+
+/** Atualiza texto de status na nav */
+function atualizarStatus(texto) {
+  document.getElementById('stTxt').textContent = texto;
+}
+
+/** Mostra mensagem de erro (auto-dismiss após 10s) */
+function mostrarErro(texto) {
+  document.getElementById('errT').innerHTML = '<b>' + texto + '</b>';
+  document.getElementById('errS').classList.add('on');
+  setTimeout(esconderErro, 10000);
+}
+
+/** Esconde mensagem de erro */
+function esconderErro() {
+  document.getElementById('errS').classList.remove('on');
+}
+
+/** Atualiza barra de progresso */
+function atualizarProgresso(ufAtual, paginaAtual, totalPaginas) {
+  const detalhe = document.getElementById('ldD');
+  detalhe.textContent = (ufAtual || 'BR') + ' \u00B7 p\u00E1g ' + paginaAtual +
+    (totalPaginas > 1 ? '/' + totalPaginas : '');
+
+  // Atualizar barra de progresso
+  const barraFill = document.getElementById('progressFill');
+  if (ufParaBuscar.length > 1) {
+    const indiceUF = ufParaBuscar.indexOf(ufAtual);
+    const percentual = ((indiceUF + 1) / ufParaBuscar.length) * 100;
+    barraFill.style.width = percentual.toFixed(0) + '%';
+  }
+}
+
+// === BUSCA NA API PNCP ===
+
+/** Auto-busca ao carregar a página */
+window.addEventListener('load', () => setTimeout(buscar, 400));
+
+/**
+ * Função principal de busca.
+ * [BUG 1 CORRIGIDO] Usa LISTA_UFS completa quando nenhuma UF selecionada.
+ * [BUG 7 CORRIGIDO] Trata HTTP 400/429 adequadamente com try/catch por UF.
+ */
+async function buscar() {
+  const dataInicial = document.getElementById('dI').value;
+  const dataFinal = document.getElementById('dF').value;
+  const modalidade = document.getElementById('mod').value;
+  const ufsSelecionadas = obterUFsSelecionadas();
+  const keywords = obterPalavrasChave();
+
+  // Validações
+  if (!dataInicial || !dataFinal) {
+    mostrarErro('Preencha as datas.');
+    return;
+  }
+  if (!keywords.length) {
+    mostrarErro('Ative pelo menos 1 palavra-chave.');
+    return;
+  }
+
+  // Reset do estado
+  esconderErro();
+  todosResultados = [];
+  resultadosFiltrados = [];
+  ufAtiva = null;
+  document.getElementById('resC').innerHTML = '';
+  document.getElementById('sBar').style.display = 'none';
+
+  // UI de loading
+  mostrarLoading(true);
+  atualizarStatus('Buscando...');
+  const btnBuscar = document.getElementById('btnB');
+  btnBuscar.disabled = true;
+  btnBuscar.classList.add('loading');
+
+  // Mostrar barra de progresso
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  progressBar.classList.add('on');
+  progressFill.style.width = '0%';
+
+  try {
+    let todos = [];
+
+    // [BUG 1] Quando nenhuma UF selecionada, busca em TODAS as UFs
+    ufParaBuscar = ufsSelecionadas.length ? ufsSelecionadas : LISTA_UFS;
+
+    for (const uf of ufParaBuscar) {
+      let pagina = 1;
+      let totalPaginas = 1;
+
+      while (pagina <= totalPaginas && pagina <= 15) {
+        atualizarProgresso(uf, pagina, totalPaginas);
+
+        try {
+          const params = new URLSearchParams({
+            dataInicial: formatarDataAPI(dataInicial),
+            dataFinal: formatarDataAPI(dataFinal),
+            pagina: pagina.toString(),
+            tamanhoPagina: '50',
+            uf: uf  // [BUG 1] Sempre envia UF
+          });
+
+          if (modalidade) {
+            params.set('codigoModalidadeContratacao', modalidade);
+          }
+
+          const resposta = await fetch(API_URL + '?' + params);
+
+          // [BUG 7] Tratar diferentes códigos HTTP
+          if (!resposta.ok) {
+            if (resposta.status === 400 || resposta.status === 404) {
+              console.warn('[PNCP] ' + uf + ': HTTP ' + resposta.status + ' na pág ' + pagina + ' - pulando');
+              break;
+            }
+            if (resposta.status === 429) {
+              console.warn('[PNCP] ' + uf + ': Rate limited, aguardando 2s...');
+              await aguardar(2000);
+              continue;
+            }
+            throw new Error('HTTP ' + resposta.status);
+          }
+
+          const dados = await resposta.json();
+          if (!dados.data || !dados.data.length) break;
+
+          dados.data.forEach((item) => {
+            item._uf = uf || extrairUF(item);
+          });
+
+          todos = todos.concat(dados.data);
+          totalPaginas = dados.totalPaginas || 1;
+          pagina++;
+
+        } catch (erroUF) {
+          // [BUG 7] Erro por UF não aborta a busca inteira
+          console.warn('[PNCP] Erro ao buscar ' + uf + ':', erroUF.message);
+          break;
+        }
+
+        await aguardar(250);
+      }
+    }
+
+    // Filtrar por keywords e remover duplicatas
+    const vistos = new Set();
+    todosResultados = todos
+      .filter((item) => {
+        const texto = [item.objetoCompra, item.orgaoEntidade?.razaoSocial, item.descricao]
+          .filter(Boolean).join(' ');
+        return correspondeKeywords(texto, keywords);
+      })
+      .filter((item) => {
+        const id = item.numeroControlePNCP || JSON.stringify(item);
+        if (vistos.has(id)) return false;
+        vistos.add(id);
+        return true;
+      });
+
+    // Marcar licitações novas
+    const vistosAnteriores = obterVistos();
+    const idsAtuais = todosResultados.map((i) => i.numeroControlePNCP).filter(Boolean);
+    todosResultados.forEach((item) => {
+      item._isNova = item.numeroControlePNCP && !vistosAnteriores.includes(item.numeroControlePNCP);
+    });
+    salvarVistos([...new Set([...vistosAnteriores, ...idsAtuais])]);
+
+    // Renderizar resultados
+    resultadosFiltrados = [...todosResultados];
+    mostrarLoading(false);
+    renderizar(resultadosFiltrados, keywords);
+    atualizarEstatisticas(resultadosFiltrados);
+
+    const novasCount = todosResultados.filter((i) => i._isNova).length;
+    atualizarStatus(
+      resultadosFiltrados.length + ' licit.' +
+      (novasCount ? ' \u00B7 ' + novasCount + ' novas' : '')
+    );
+
+  } catch (e) {
+    mostrarLoading(false);
+    if (e.message.includes('fetch') || e.message.includes('Failed')) {
+      mostrarErro('CORS \u2014 use links diretos');
+    } else {
+      mostrarErro('Erro: ' + e.message);
+    }
+    atualizarStatus('Erro');
+  }
+
+  // Restaurar UI
+  btnBuscar.disabled = false;
+  btnBuscar.classList.remove('loading');
+  progressBar.classList.remove('on');
+}
+
+// === RENDERIZAÇÃO ===
+
+/**
+ * Renderiza os resultados na tela.
+ * [BUG 3 CORRIGIDO] Usa data-href + event delegation em vez de onclick inline.
+ */
+function renderizar(resultados, keywords) {
+  const container = document.getElementById('resC');
+
+  if (!resultados.length) {
+    container.innerHTML =
+      '<div class="empty fi">' +
+        '<div class="empty-icon">&#128269;</div>' +
+        '<div class="empty-t">Nenhuma licita\u00E7\u00E3o</div>' +
+        '<p>Amplie o per\u00EDodo ou altere filtros.</p>' +
+      '</div>';
+    return;
+  }
+
+  // Contagem de UFs para a barra de filtro
+  const contagemUF = {};
+  todosResultados.forEach((item) => {
+    const uf = item._uf || '??';
+    contagemUF[uf] = (contagemUF[uf] || 0) + 1;
+  });
+  const ufsOrdenadas = Object.entries(contagemUF)
+    .sort((a, b) => a[0] === 'DF' ? -1 : b[0] === 'DF' ? 1 : b[1] - a[1]);
+
+  // Cabeçalho
+  let html = '<div class="res-head">' +
+    '<div class="res-count"><b>' + resultados.length + '</b> licita\u00E7\u00F5es</div>' +
+    '<select class="sort-sel" onchange="ordenarResultados(this.value)">' +
+      '<option value="dd">Recentes</option>' +
+      '<option value="da">Antigas</option>' +
+      '<option value="vd">Maior R$</option>' +
+      '<option value="va">Menor R$</option>' +
+    '</select>' +
+  '</div>';
+
+  // Barra de UF (se mais de uma)
+  if (ufsOrdenadas.length > 1) {
+    html += '<div class="ruf-bar">' +
+      '<span class="ruf-label">UF:</span>' +
+      '<span class="ruf-chip' + (ufAtiva ? '' : ' on') + '" onclick="filtrarPorUF(null)">' +
+        'Todas<span class="ruf-count"> ' + todosResultados.length + '</span>' +
+      '</span>';
+    ufsOrdenadas.forEach(([uf, count]) => {
+      html += '<span class="ruf-chip' + (ufAtiva === uf ? ' on' : '') + '" ' +
+        'onclick="filtrarPorUF(\'' + uf + '\')">' +
+        uf + '<span class="ruf-count"> ' + count + '</span></span>';
+    });
+    html += '</div>';
+  }
+
+  // Lista de cards
+  html += '<div class="res-list">';
+
+  resultados.forEach((item, idx) => {
+    const orgao = item.orgaoEntidade?.razaoSocial || '\u2014';
+    const objeto = item.objetoCompra || '';
+    const modalidade = item.modalidadeNome || item.modalidadeLicitacaoNome || '';
+    const valor = item.valorTotalEstimado || item.valorTotalHomologado || null;
+    const dataAbertura = item.dataAberturaProposta || item.dataEncerramentoProposta || null;
+    const situacao = item.situacaoCompraNome || '';
+    const uf = item._uf || '??';
+    const ano = item.anoCompra || '';
+    const seq = item.sequencialCompra || '';
+    const cnpj = item.orgaoEntidade?.cnpj || '';
+    const isNova = item._isNova;
+
+    // Montar link de forma segura
+    let link = '#';
+    if (cnpj && ano && seq) {
+      link = 'https://pncp.gov.br/app/editais/' +
+        encodeURIComponent(cnpj) + '/' +
+        encodeURIComponent(ano) + '/' +
+        encodeURIComponent(seq);
+    }
+
+    // [BUG 3] Usar data-href em vez de onclick inline
+    html += '<div class="res-card fi' + (isNova ? ' is-new' : '') + '"' +
+      ' style="animation-delay:' + Math.min(idx * 0.02, 0.3) + 's"' +
+      ' data-href="' + link.replace(/"/g, '&quot;') + '"' +
+      ' role="link" tabindex="0">' +
+      (isNova ? '<span class="new-tag">Nova</span>' : '') +
+      '<div class="res-top">' +
+        '<span class="uf-badge ' + classeUFBadge(uf) + '">' + uf + '</span>' +
+        '<span class="res-org">' + orgao + '</span>' +
+        (modalidade ? '<span class="res-mod ' + classeModalidade(modalidade) + '">' + modalidade + '</span>' : '') +
+      '</div>' +
+      '<div class="res-obj">' + destacarKeywords(objeto, keywords) + '</div>' +
+      '<div class="res-meta">' +
+        (valor ?
+          '<span class="mi">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+              '<path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>' +
+            '</svg>' +
+            '<span class="val">' + formatarMoedaCompleta(valor) + '</span>' +
+          '</span>' : '') +
+        (dataAbertura ?
+          '<span class="mi">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+              '<rect x="3" y="4" width="18" height="18" rx="2"/>' +
+              '<line x1="16" y1="2" x2="16" y2="6"/>' +
+              '<line x1="8" y1="2" x2="8" y2="6"/>' +
+              '<line x1="3" y1="10" x2="21" y2="10"/>' +
+            '</svg>' +
+            '<b>' + formatarDataExibicao(dataAbertura) + '</b>' +
+          '</span>' : '') +
+        (situacao ?
+          '<span class="mi">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+              '<circle cx="12" cy="12" r="10"/>' +
+              '<polyline points="12 6 12 12 16 14"/>' +
+            '</svg>' +
+            '<b>' + situacao + '</b>' +
+          '</span>' : '') +
+      '</div>' +
+      '<a class="res-link" href="' + link.replace(/"/g, '&quot;') + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ver no PNCP \u2192</a>' +
+    '</div>';
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// === FILTROS E ORDENAÇÃO ===
+
+/**
+ * [BUG 6 CORRIGIDO] Filtra por UF e faz scroll suave para os resultados.
+ * [BUG 8 CORRIGIDO] Sem parâmetros não usados.
+ */
+function filtrarPorUF(uf) {
+  ufAtiva = uf;
+  resultadosFiltrados = uf
+    ? todosResultados.filter((item) => item._uf === uf)
+    : [...todosResultados];
+  renderizar(resultadosFiltrados, obterPalavrasChave());
+  atualizarEstatisticas(resultadosFiltrados);
+
+  // [BUG 6] Scroll suave para o topo dos resultados
+  const containerResultados = document.getElementById('resC');
+  if (containerResultados) {
+    window.scrollTo({
+      top: containerResultados.offsetTop - 80,
+      behavior: 'smooth'
+    });
+  }
+}
+
+/** Ordena resultados */
+function ordenarResultados(modo) {
+  switch (modo) {
+    case 'dd':
+      resultadosFiltrados.sort((a, b) =>
+        new Date(b.dataPublicacaoPncp || 0) - new Date(a.dataPublicacaoPncp || 0));
+      break;
+    case 'da':
+      resultadosFiltrados.sort((a, b) =>
+        new Date(a.dataPublicacaoPncp || 0) - new Date(b.dataPublicacaoPncp || 0));
+      break;
+    case 'vd':
+      resultadosFiltrados.sort((a, b) =>
+        (b.valorTotalEstimado || 0) - (a.valorTotalEstimado || 0));
+      break;
+    case 'va':
+      resultadosFiltrados.sort((a, b) =>
+        (a.valorTotalEstimado || 0) - (b.valorTotalEstimado || 0));
+      break;
+  }
+  renderizar(resultadosFiltrados, obterPalavrasChave());
+}
+
+/**
+ * [BUG 2 + BUG 8 CORRIGIDO] Atualiza barra de estatísticas.
+ * Usa formatarMoedaCompacta() e recebe apenas 1 parâmetro.
+ */
+function atualizarEstatisticas(resultados) {
+  document.getElementById('sBar').style.display = 'grid';
+  document.getElementById('sT').textContent = resultados.length;
+  document.getElementById('sV').textContent = formatarMoedaCompacta(
+    resultados.reduce((soma, item) => soma + (item.valorTotalEstimado || 0), 0)
+  );
+  document.getElementById('sA').textContent = resultados.filter((item) =>
+    /divulgada|aberta|publicada/i.test(item.situacaoCompraNome || '')
+  ).length;
+  document.getElementById('sN').textContent = resultados.filter((item) => item._isNova).length;
+}
+
+/** Limpa todos os resultados */
+function limpar() {
+  todosResultados = [];
+  resultadosFiltrados = [];
+  ufAtiva = null;
+  document.getElementById('resC').innerHTML = '';
+  document.getElementById('sBar').style.display = 'none';
+  esconderErro();
+  atualizarStatus('Pronto');
+}
+
+// === EVENT LISTENERS ===
+
+/**
+ * [BUG 3] Delegação de eventos para clicks nos cards de resultado.
+ * Evita HTML injection via onclick inline.
+ */
+document.getElementById('resC').addEventListener('click', (e) => {
+  const card = e.target.closest('.res-card[data-href]');
+  if (card && !e.target.closest('.res-link')) {
+    window.open(card.dataset.href, '_blank', 'noopener');
+  }
+});
+
+// Acessibilidade: Enter/Space nos cards
+document.getElementById('resC').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    const card = e.target.closest('.res-card[data-href]');
+    if (card) {
+      e.preventDefault();
+      window.open(card.dataset.href, '_blank', 'noopener');
+    }
+  }
+});
+
+// Botão "Voltar ao topo"
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', () => {
+  scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+}, { passive: true });
+
+scrollTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 </script>
 </body>
 </html>
