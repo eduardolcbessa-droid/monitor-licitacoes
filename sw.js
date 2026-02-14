@@ -2,7 +2,7 @@
 // LicitaMonitor v3.0 — Service Worker
 // ============================================================
 
-const CACHE_NAME = 'licitamonitor-v3';
+const CACHE_NAME = 'licitamonitor-v3.1';
 
 const ASSETS_TO_CACHE = [
   './index.html',
@@ -36,16 +36,9 @@ self.addEventListener('activate', (evento) => {
 self.addEventListener('fetch', (evento) => {
   const url = evento.request.url;
 
-  if (url.includes('pncp.gov.br/api')) {
-    // API PNCP: network-first, retorna dados vazios se offline
-    evento.respondWith(
-      fetch(evento.request).catch(() =>
-        new Response(
-          JSON.stringify({ data: [], totalPaginas: 0 }),
-          { headers: { 'Content-Type': 'application/json' } }
-        )
-      )
-    );
+  if (url.includes('pncp.gov.br/api') || url.includes('corsproxy.io')) {
+    // API PNCP e proxies: não interceptar, deixar o código principal tratar erros
+    return;
   } else if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
     // Fontes Google: cache-first com fallback para rede
     evento.respondWith(
