@@ -940,7 +940,7 @@ footer a:hover { color: var(--blue); }
 
 // === CONFIGURAÇÃO ===
 const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
-const PROXY_URL = 'https://corsproxy.io/?';
+const PROXY_URL = 'https://corsproxy.io/?url=';
 let usarProxy = false;
 
 /**
@@ -949,17 +949,17 @@ let usarProxy = false;
  */
 async function fetchPNCP(url) {
   if (usarProxy) {
+    console.log('[LicitaMonitor] Usando proxy:', PROXY_URL + encodeURIComponent(url));
     return fetch(PROXY_URL + encodeURIComponent(url));
   }
   try {
-    return await fetch(url);
+    const resp = await fetch(url);
+    console.log('[LicitaMonitor] API direta OK, status:', resp.status);
+    return resp;
   } catch (e) {
-    if (e instanceof TypeError) {
-      console.log('[LicitaMonitor] CORS detectado, ativando proxy');
-      usarProxy = true;
-      return fetch(PROXY_URL + encodeURIComponent(url));
-    }
-    throw e;
+    console.warn('[LicitaMonitor] Fetch direto falhou:', e.message, '- tentando proxy CORS');
+    usarProxy = true;
+    return fetch(PROXY_URL + encodeURIComponent(url));
   }
 }
 
@@ -1004,8 +1004,19 @@ document.getElementById('installClose').addEventListener('click', () => {
   document.getElementById('installB').classList.remove('show');
 });
 
+// Desregistrar SWs antigos que engoliam erros da API, depois registrar o novo
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((reg) => {
+      reg.unregister().then(() => console.log('[LicitaMonitor] SW antigo removido'));
+    });
+    // Registrar novo SW após limpar os antigos
+    setTimeout(() => {
+      navigator.serviceWorker.register('./sw.js').then(() => {
+        console.log('[LicitaMonitor] Novo SW registrado (v3.1)');
+      });
+    }, 500);
+  });
 }
 
 // === INICIALIZAÇÃO DE DATAS ===
