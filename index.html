@@ -1045,33 +1045,32 @@ document.getElementById('installClose').addEventListener('click', () => {
   document.getElementById('installB').classList.remove('show');
 });
 
-// Desregistrar SWs antigos e registrar o novo
+// Registrar Service Worker (sem loop de unregister/register)
 if ('serviceWorker' in navigator) {
-  // Auto-refresh quando novo SW assume controle (garante HTML atualizado)
+  let swReloading = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    console.log('[LicitaMonitor] Novo SW assumiu controle, recarregando...');
-    window.location.reload();
+    if (swReloading) return;
+    // Só recarrega 1x por sessão
+    if (!sessionStorage.getItem('sw-reloaded')) {
+      swReloading = true;
+      sessionStorage.setItem('sw-reloaded', '1');
+      console.log('[LicitaMonitor] Novo SW ativo, recarregando 1x...');
+      window.location.reload();
+    }
   });
 
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    const hadOld = registrations.length > 0;
-    registrations.forEach((reg) => {
-      reg.unregister().then(() => console.log('[LicitaMonitor] SW antigo removido'));
-    });
-    setTimeout(() => {
-      navigator.serviceWorker.register('./sw.js').then(() => {
-        console.log('[LicitaMonitor] Novo SW registrado (v3.1)');
-      });
-    }, hadOld ? 1000 : 100);
+  navigator.serviceWorker.register('./sw.js').then((reg) => {
+    console.log('[LicitaMonitor] SW registrado (v3.2)');
+    reg.update();
   });
 }
 
 // === INICIALIZAÇÃO DE DATAS ===
 const hoje = new Date();
-const trintaDiasAtras = new Date(hoje);
-trintaDiasAtras.setDate(hoje.getDate() - 30);
+const seteDiasAtras = new Date(hoje);
+seteDiasAtras.setDate(hoje.getDate() - 7);
 document.getElementById('dF').value = formatarData(hoje);
-document.getElementById('dI').value = formatarData(trintaDiasAtras);
+document.getElementById('dI').value = formatarData(seteDiasAtras);
 
 // === INICIALIZAÇÃO DO GRID DE UFs ===
 const ufGridEl = document.getElementById('ufG');
@@ -1327,8 +1326,7 @@ function atualizarProgresso(ufAtual, paginaAtual, totalPaginas) {
 
 // === BUSCA NA API PNCP ===
 
-/** Auto-busca ao carregar a página */
-window.addEventListener('load', () => setTimeout(buscar, 400));
+// Sem auto-busca: usuário clica "Buscar" quando quiser
 
 /**
  * Função principal de busca.
