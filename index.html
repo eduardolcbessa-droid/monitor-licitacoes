@@ -906,6 +906,12 @@ footer a:hover { color: var(--blue); }
     </div>
   </div>
 
+  <!-- Diagnóstico (visível durante busca) -->
+  <div id="diagPanel" style="display:none;margin:10px 16px;padding:10px 14px;background:#1a1a2e;border:1px solid #333;border-radius:8px;font-family:monospace;font-size:11px;color:#7fdbca">
+    <div style="color:#888;margin-bottom:4px">Diagnóstico de conexão:</div>
+    <pre id="diagLog" style="margin:0;white-space:pre-wrap;line-height:1.5"></pre>
+  </div>
+
   <!-- Erro -->
   <div class="error" id="errS">
     <span>&#9888;</span>
@@ -940,27 +946,62 @@ footer a:hover { color: var(--blue); }
 
 // === CONFIGURAÇÃO ===
 const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
-const PROXY_URL = 'https://corsproxy.io/?';
-let usarProxy = false;
+const PROXIES = [
+  { nome: 'corsproxy.io', montar: (u) => 'https://corsproxy.io/?url=' + encodeURIComponent(u) },
+  { nome: 'allorigins', montar: (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u) },
+  { nome: 'corsproxy.org', montar: (u) => 'https://corsproxy.org/?' + encodeURIComponent(u) },
+];
+let proxyIdx = -1; // -1 = direto, 0+ = índice do proxy
+
+// Log de diagnóstico visível na UI
+const _logs = [];
+function logDiag(msg) {
+  console.log('[LicitaMonitor] ' + msg);
+  _logs.push(msg);
+  const el = document.getElementById('diagLog');
+  if (el) el.textContent = _logs.slice(-6).join('\n');
+}
 
 /**
- * Fetch com fallback para proxy CORS.
- * Tenta acesso direto primeiro; se falhar com TypeError (CORS), ativa proxy.
+ * Fetch com fallback automático entre proxy CORS.
+ * Tenta: direto → proxy 1 → proxy 2 → proxy 3
  */
 async function fetchPNCP(url) {
-  if (usarProxy) {
-    return fetch(PROXY_URL + encodeURIComponent(url));
+  // Se já encontrou um proxy que funciona, usar ele
+  if (proxyIdx >= 0) {
+    const proxyUrl = PROXIES[proxyIdx].montar(url);
+    logDiag('Usando ' + PROXIES[proxyIdx].nome);
+    return fetch(proxyUrl);
   }
+
+  // Tentar acesso direto
   try {
-    return await fetch(url);
+    logDiag('Tentando API direta...');
+    const resp = await fetch(url);
+    logDiag('API direta OK (status ' + resp.status + ')');
+    return resp;
   } catch (e) {
-    if (e instanceof TypeError) {
-      console.log('[LicitaMonitor] CORS detectado, ativando proxy');
-      usarProxy = true;
-      return fetch(PROXY_URL + encodeURIComponent(url));
-    }
-    throw e;
+    logDiag('API direta falhou: ' + e.message);
   }
+
+  // Tentar cada proxy em sequência
+  for (let i = 0; i < PROXIES.length; i++) {
+    try {
+      const proxyUrl = PROXIES[i].montar(url);
+      logDiag('Tentando proxy: ' + PROXIES[i].nome + '...');
+      const resp = await fetch(proxyUrl);
+      if (resp.ok || resp.status === 400 || resp.status === 404) {
+        logDiag(PROXIES[i].nome + ' funcionou! (status ' + resp.status + ')');
+        proxyIdx = i;
+        return resp;
+      }
+      logDiag(PROXIES[i].nome + ' retornou status ' + resp.status);
+    } catch (e) {
+      logDiag(PROXIES[i].nome + ' falhou: ' + e.message);
+    }
+  }
+
+  throw new TypeError('Todos os proxies falharam para ' + url);
 }
 
 const LISTA_UFS = [
@@ -1004,8 +1045,25 @@ document.getElementById('installClose').addEventListener('click', () => {
   document.getElementById('installB').classList.remove('show');
 });
 
+// Desregistrar SWs antigos e registrar o novo
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
+  // Auto-refresh quando novo SW assume controle (garante HTML atualizado)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('[LicitaMonitor] Novo SW assumiu controle, recarregando...');
+    window.location.reload();
+  });
+
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    const hadOld = registrations.length > 0;
+    registrations.forEach((reg) => {
+      reg.unregister().then(() => console.log('[LicitaMonitor] SW antigo removido'));
+    });
+    setTimeout(() => {
+      navigator.serviceWorker.register('./sw.js').then(() => {
+        console.log('[LicitaMonitor] Novo SW registrado (v3.1)');
+      });
+    }, hadOld ? 1000 : 100);
+  });
 }
 
 // === INICIALIZAÇÃO DE DATAS ===
@@ -1296,11 +1354,15 @@ async function buscar() {
 
   // Reset do estado
   esconderErro();
+  _logs.length = 0;
+  proxyIdx = -1; // reset proxy para testar de novo
   todosResultados = [];
   resultadosFiltrados = [];
   ufAtiva = null;
   document.getElementById('resC').innerHTML = '';
   document.getElementById('sBar').style.display = 'none';
+  document.getElementById('diagPanel').style.display = 'block';
+  document.getElementById('diagLog').textContent = '';
 
   // UI de loading
   mostrarLoading(true);
@@ -1383,6 +1445,9 @@ async function buscar() {
       throw new Error('API_INACESSIVEL');
     }
 
+    logDiag('API retornou ' + todos.length + ' itens no total');
+    logDiag('Filtrando por ' + keywords.length + ' palavras-chave...');
+
     // Filtrar por keywords e remover duplicatas
     const vistos = new Set();
     todosResultados = todos
@@ -1406,11 +1471,18 @@ async function buscar() {
     });
     salvarVistos([...new Set([...vistosAnteriores, ...idsAtuais])]);
 
+    logDiag('Após filtro: ' + todosResultados.length + ' licitações encontradas');
+
     // Renderizar resultados
     resultadosFiltrados = [...todosResultados];
     mostrarLoading(false);
     renderizar(resultadosFiltrados, keywords);
     atualizarEstatisticas(resultadosFiltrados);
+
+    // Esconder diagnóstico se tudo deu certo
+    if (todosResultados.length > 0) {
+      document.getElementById('diagPanel').style.display = 'none';
+    }
 
     const novasCount = todosResultados.filter((i) => i._isNova).length;
     let statusMsg = resultadosFiltrados.length + ' licit.';
@@ -1420,18 +1492,16 @@ async function buscar() {
 
     if (errosUF > 0 && errosUF < ufParaBuscar.length) {
       mostrarErro(errosUF + ' estado(s) n\u00E3o puderam ser consultados. Resultados parciais.' +
-        (usarProxy ? ' <small>Usando proxy CORS</small>' : ''));
+        (proxyIdx >= 0 ? ' <small>Via ' + PROXIES[proxyIdx].nome + '</small>' : ''));
     }
 
   } catch (e) {
     mostrarLoading(false);
-    if (e.message === 'API_INACESSIVEL' || e.message.includes('fetch') || e.message.includes('Failed') || e.message.includes('TypeError')) {
-      mostrarErro('N\u00E3o foi poss\u00EDvel acessar a API do PNCP.<br>' +
-        '<small>Isso pode acontecer por bloqueio CORS ou problemas de rede. ' +
-        'Tente recarregar a p\u00E1gina. Se persistir, use os portais diretos acima.</small>');
-    } else {
-      mostrarErro('Erro: ' + e.message);
-    }
+    logDiag('ERRO FINAL: ' + e.message);
+    mostrarErro('N\u00E3o foi poss\u00EDvel acessar a API do PNCP.<br>' +
+      '<small>Tentamos acesso direto + 3 proxies CORS. ' +
+      'Tente: 1) Recarregar (Ctrl+Shift+R), 2) Limpar cache do navegador, ' +
+      '3) Usar os portais diretos acima.</small>');
     atualizarStatus('Erro na consulta');
   }
 
