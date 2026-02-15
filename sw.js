@@ -1,8 +1,8 @@
 // ============================================================
-// LicitaMonitor v3.0 — Service Worker
+// LicitaMonitor v3.2 — Service Worker
 // ============================================================
 
-const CACHE_NAME = 'licitamonitor-v3.1';
+const CACHE_NAME = 'licitamonitor-v3.2';
 
 const ASSETS_TO_CACHE = [
   './index.html',
@@ -36,11 +36,30 @@ self.addEventListener('activate', (evento) => {
 self.addEventListener('fetch', (evento) => {
   const url = evento.request.url;
 
-  if (url.includes('pncp.gov.br/api') || url.includes('corsproxy.io')) {
-    // API PNCP e proxies: não interceptar, deixar o código principal tratar erros
+  // API PNCP e proxies CORS: NUNCA interceptar
+  if (url.includes('pncp.gov.br/api') ||
+      url.includes('corsproxy.io') ||
+      url.includes('allorigins.win') ||
+      url.includes('corsproxy.org')) {
     return;
-  } else if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
-    // Fontes Google: cache-first com fallback para rede
+  }
+
+  // HTML: network-first (garante código atualizado)
+  if (evento.request.mode === 'navigate' || url.endsWith('.html') || url.endsWith('/')) {
+    evento.respondWith(
+      fetch(evento.request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(evento.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(evento.request))
+    );
+    return;
+  }
+
+  // Fontes Google: cache-first
+  if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
     evento.respondWith(
       caches.match(evento.request).then((cached) =>
         cached || fetch(evento.request).then((response) => {
@@ -50,10 +69,11 @@ self.addEventListener('fetch', (evento) => {
         })
       )
     );
-  } else {
-    // Assets estáticos: cache-first
-    evento.respondWith(
-      caches.match(evento.request).then((cached) => cached || fetch(evento.request))
-    );
+    return;
   }
+
+  // Outros assets: cache-first
+  evento.respondWith(
+    caches.match(evento.request).then((cached) => cached || fetch(evento.request))
+  );
 });
