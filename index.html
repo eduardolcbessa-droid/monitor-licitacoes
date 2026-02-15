@@ -907,9 +907,9 @@ footer a:hover { color: var(--blue); }
   </div>
 
   <!-- Diagnóstico (visível durante busca) -->
-  <div id="diagPanel" style="display:none;margin:10px 16px;padding:10px 14px;background:#1a1a2e;border:1px solid #333;border-radius:8px;font-family:monospace;font-size:11px;color:#7fdbca">
-    <div style="color:#888;margin-bottom:4px">Diagnóstico de conexão:</div>
-    <pre id="diagLog" style="margin:0;white-space:pre-wrap;line-height:1.5"></pre>
+  <div id="diagPanel" style="display:none;margin:10px 16px;padding:10px 14px;background:#1a1a2e;border:1px solid #444;border-radius:8px;font-family:monospace;font-size:12px;color:#7fdbca;max-height:300px;overflow-y:auto">
+    <div style="color:#aaa;margin-bottom:6px;font-weight:bold">Diagnostico de conexao:</div>
+    <pre id="diagLog" style="margin:0;white-space:pre-wrap;line-height:1.6"></pre>
   </div>
 
   <!-- Erro -->
@@ -941,15 +941,15 @@ footer a:hover { color: var(--blue); }
 
 <script>
 // ============================================================
-// LicitaMonitor v3.1 — Monitor de Licitações de Infraestrutura
+// LicitaMonitor v3.3 — Monitor de Licitações de Infraestrutura
 // ============================================================
 
 // === CONFIGURAÇÃO ===
 const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
 const PROXIES = [
-  { nome: 'corsproxy.io', montar: (u) => 'https://corsproxy.io/?url=' + encodeURIComponent(u) },
   { nome: 'allorigins', montar: (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u) },
   { nome: 'corsproxy.org', montar: (u) => 'https://corsproxy.org/?' + encodeURIComponent(u) },
+  { nome: 'codetabs', montar: (u) => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u) },
 ];
 let proxyIdx = -1; // -1 = direto, 0+ = índice do proxy
 
@@ -959,49 +959,83 @@ function logDiag(msg) {
   console.log('[LicitaMonitor] ' + msg);
   _logs.push(msg);
   const el = document.getElementById('diagLog');
-  if (el) el.textContent = _logs.slice(-6).join('\n');
+  if (el) el.textContent = _logs.slice(-12).join('\n');
 }
 
 /**
- * Fetch com fallback automático entre proxy CORS.
- * Tenta: direto → proxy 1 → proxy 2 → proxy 3
+ * Valida se a resposta é JSON da API PNCP (não HTML de erro de proxy).
+ * Clona a response para não consumir o body.
+ */
+async function validarRespostaPNCP(resp) {
+  try {
+    const clone = resp.clone();
+    const json = await clone.json();
+    return json.data !== undefined || json.totalPaginas !== undefined;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Fetch com fallback automático entre proxies CORS.
+ * Tenta: direto -> allorigins -> corsproxy.org -> codetabs
+ * Valida que a resposta é JSON real da API (não HTML de erro).
  */
 async function fetchPNCP(url) {
   // Se já encontrou um proxy que funciona, usar ele
   if (proxyIdx >= 0) {
     const proxyUrl = PROXIES[proxyIdx].montar(url);
-    logDiag('Usando ' + PROXIES[proxyIdx].nome);
-    return fetch(proxyUrl);
+    logDiag('Via ' + PROXIES[proxyIdx].nome);
+    const resp = await fetch(proxyUrl);
+    // Se o proxy parou de funcionar, resetar e tentar outros
+    if (!resp.ok && resp.status !== 400 && resp.status !== 404) {
+      logDiag(PROXIES[proxyIdx].nome + ' falhou (HTTP ' + resp.status + '), tentando outros...');
+      proxyIdx = -1;
+      return fetchPNCP(url);
+    }
+    return resp;
   }
 
-  // Tentar acesso direto
+  // Tentar acesso direto (funciona se PNCP liberar CORS)
   try {
     logDiag('Tentando API direta...');
     const resp = await fetch(url);
-    logDiag('API direta OK (status ' + resp.status + ')');
-    return resp;
+    if (resp.ok && await validarRespostaPNCP(resp)) {
+      logDiag('API direta OK!');
+      return resp;
+    }
+    logDiag('API direta: HTTP ' + resp.status + ' (sem CORS)');
   } catch (e) {
-    logDiag('API direta falhou: ' + e.message);
+    logDiag('API direta bloqueada (CORS)');
   }
 
-  // Tentar cada proxy em sequência
+  // Tentar cada proxy em sequência, validando que retorna JSON real
   for (let i = 0; i < PROXIES.length; i++) {
     try {
       const proxyUrl = PROXIES[i].montar(url);
-      logDiag('Tentando proxy: ' + PROXIES[i].nome + '...');
+      logDiag('Tentando ' + PROXIES[i].nome + '...');
       const resp = await fetch(proxyUrl);
-      if (resp.ok || resp.status === 400 || resp.status === 404) {
-        logDiag(PROXIES[i].nome + ' funcionou! (status ' + resp.status + ')');
-        proxyIdx = i;
-        return resp;
+
+      if (!resp.ok && resp.status !== 400 && resp.status !== 404) {
+        logDiag(PROXIES[i].nome + ': HTTP ' + resp.status);
+        continue;
       }
-      logDiag(PROXIES[i].nome + ' retornou status ' + resp.status);
+
+      // Validar que é JSON da API, não HTML de erro do proxy
+      if (resp.ok && !(await validarRespostaPNCP(resp))) {
+        logDiag(PROXIES[i].nome + ': resposta nao e JSON da API (proxy bloqueou?)');
+        continue;
+      }
+
+      logDiag(PROXIES[i].nome + ' funcionou!');
+      proxyIdx = i;
+      return resp;
     } catch (e) {
-      logDiag(PROXIES[i].nome + ' falhou: ' + e.message);
+      logDiag(PROXIES[i].nome + ': ' + e.message);
     }
   }
 
-  throw new TypeError('Todos os proxies falharam para ' + url);
+  throw new TypeError('Nenhum proxy CORS funcionou');
 }
 
 const LISTA_UFS = [
@@ -1477,9 +1511,14 @@ async function buscar() {
     renderizar(resultadosFiltrados, keywords);
     atualizarEstatisticas(resultadosFiltrados);
 
-    // Esconder diagnóstico se tudo deu certo
+    // Esconder diagnóstico após 5s se teve resultados
     if (todosResultados.length > 0) {
-      document.getElementById('diagPanel').style.display = 'none';
+      logDiag('Busca concluida com ' + todosResultados.length + ' resultados!');
+      setTimeout(() => {
+        document.getElementById('diagPanel').style.display = 'none';
+      }, 5000);
+    } else {
+      logDiag('Nenhum resultado encontrado com as palavras-chave selecionadas.');
     }
 
     const novasCount = todosResultados.filter((i) => i._isNova).length;
